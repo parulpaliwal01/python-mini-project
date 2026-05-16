@@ -1420,72 +1420,91 @@ function initCalculator() {
     let currentValue = '0';
     let previousValue = '';
     let operation = '';
-
+    let isNewOperand = false;
+    
     document.querySelectorAll('.calc-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const value = btn.getAttribute('data-value');
             const action = btn.getAttribute('data-action');
-
+            
             if (value) {
                 handleNumber(value);
             } else if (action) {
                 handleAction(action);
             }
-
+            
             updateDisplay();
         });
     });
-
+    
     function handleNumber(num) {
-        if (currentValue === '0' || currentValue === 'Error') {
-            currentValue = num;
+        // Prevent multiple decimals
+        if (num === '.' && currentValue.includes('.')) return;
+        
+        if (currentValue === '0' || currentValue === 'Error' || isNewOperand) {
+            
+            currentValue = num === '.' ? '0.' : num;
+            isNewOperand = false;
         } else {
             currentValue += num;
         }
     }
-
+    
     function handleAction(action) {
         if (action === 'clear') {
             currentValue = '0';
             previousValue = '';
             operation = '';
         } else if (action === 'delete') {
-            currentValue = currentValue.slice(0, -1) || '0';
+            if (!isNewOperand && currentValue !== 'Error') {
+                currentValue = currentValue.slice(0, -1) || '0';
+            }
         } else if (action === '=') {
-            calculate();
+            if (operation && previousValue) {
+                calculate();
+                operation = ''; 
+            }
         } else {
-            if (previousValue && operation) {
+
+            if (operation && previousValue && !isNewOperand) {
                 calculate();
             }
             previousValue = currentValue;
-            currentValue = '0';
             operation = action;
+            isNewOperand = true; 
         }
     }
-
+    
     function calculate() {
-        try {
-            const prev = parseFloat(previousValue);
-            const curr = parseFloat(currentValue);
-            let result;
-
-            switch (operation) {
-                case '+': result = prev + curr; break;
-                case '-': result = prev - curr; break;
-                case '*': result = prev * curr; break;
-                case '/': result = prev / curr; break;
-                case '**': result = Math.pow(prev, curr); break;
-                default: return;
-            }
-
-            currentValue = result.toString();
-            previousValue = '';
-            operation = '';
-        } catch (e) {
-            currentValue = 'Error';
+        const prev = parseFloat(previousValue);
+        const curr = parseFloat(currentValue);
+        let result;
+        
+        if (isNaN(prev) || isNaN(curr)) return;
+        
+        switch (operation) {
+            case '+': result = prev + curr; break;
+            case '-': result = prev - curr; break;
+            case '*': result = prev * curr; break;
+            case '/': 
+                if (curr === 0) {
+                    currentValue = 'Error';
+                    previousValue = '';
+                    return;
+                }
+                result = prev / curr; 
+                break;
+            case '**': result = Math.pow(prev, curr); break;
+            default: return;
         }
+        
+        // Fix JS floating point precision issues (e.g., 0.1 + 0.2)
+        result = parseFloat(result.toPrecision(12));
+        
+        currentValue = result.toString();
+        previousValue = '';
     }
-
+    
     function updateDisplay() {
         display.textContent = currentValue;
     }

@@ -3472,6 +3472,90 @@ function getTowerOfHanoiHTML() {
 }
 
 
+        //Reset animation state
+        isAnimating = false;
+        solveBtn.disabled = false;
+        
+        for (let i = diskCount; i >= 1; i--) {
+            towers[0].push(i);
+        }
+        
+        optimalMovesEl.textContent = Math.pow(2, diskCount) - 1;
+        moveCountEl.textContent = '0';
+        drawTowers();
+    }
+    
+    function drawTowers() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw bases and poles
+        ctx.fillStyle = '#64748b';
+        for (let i = 0; i < 3; i++) {
+            // Pole
+            ctx.fillRect(towerX[i] - 5, baseY - 200, 10, 200);
+            // Base
+            ctx.fillRect(towerX[i] - 80, baseY, 160, 10);
+        }
+        
+        // Draw disks
+        for (let tower = 0; tower < 3; tower++) {
+            for (let disk = 0; disk < towers[tower].length; disk++) {
+                const diskSize = towers[tower][disk];
+                const diskWidth = (maxDiskWidth * diskSize) / diskCount;
+                const x = towerX[tower] - diskWidth / 2;
+                const y = baseY - (disk + 1) * diskHeight;
+                
+                // Disk with gradient
+                const gradient = ctx.createLinearGradient(x, y, x + diskWidth, y + diskHeight);
+                gradient.addColorStop(0, colors[diskSize - 1]);
+                gradient.addColorStop(1, colors[diskSize - 1] + 'aa');
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x, y, diskWidth, diskHeight - 2);
+                
+                // Border
+                ctx.strokeStyle = '#1e293b';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, diskWidth, diskHeight - 2);
+                
+                // Number
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(diskSize, towerX[tower], y + diskHeight / 2 + 4);
+            }
+        }
+    }
+    
+    async function moveDisk(from, to) {
+        if(shouldStop) return;
+
+        const disk = towers[from].pop();
+        towers[to].push(disk);
+        moveCount++;
+        moveCountEl.textContent = moveCount;
+        
+        drawTowers();
+        await new Promise(resolve => setTimeout(resolve, 500));
+    }
+    
+    async function solveHanoi(n, from, to, aux) {
+        if (n === 1) {
+            await moveDisk(from, to);
+            return;
+        }
+        
+        await solveHanoi(n - 1, from, aux, to);
+        await moveDisk(from, to);
+        await solveHanoi(n - 1, aux, to, from);
+    }
+    
+    async function solve() {
+        if (isAnimating) return;
+
+    return projects[projectName] || '<h2>Project Coming Soon!</h2>';
+}
+}
 
 function getTicTacToeHTML() {
     return `

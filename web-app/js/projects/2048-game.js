@@ -178,7 +178,7 @@ function get2048GameHTML() {
                     font-weight: bold;
                 }
 
-                /* Mobile View Fallback */
+                /* Mobile View Fallback: Drops controls below the board automatically */
                 @media (max-width: 520px) {
                     .game-layout {
                         flex-direction: column;
@@ -213,7 +213,6 @@ function init2048Game() {
     let board = [];
     let score = 0;
     let bestScore = localStorage.getItem("best2048") || 0;
-    let hasWon = false; // Track if 2048 win sound has already played this game
     bestDisplay.textContent = bestScore;
 
     function createBoard() {
@@ -224,7 +223,6 @@ function init2048Game() {
             [0,0,0,0]
         ];
         score = 0;
-        hasWon = false; // Reset win flag on new game
         document.getElementById("game-message").textContent = "";
         addNewTile();
         addNewTile();
@@ -293,17 +291,9 @@ function init2048Game() {
         for (let i = 0; i < 3; i++) {
             if (row[i] && row[i] === row[i + 1]) {
                 row[i] *= 2;
+                if (window.AudioManager) AudioManager.play("score_point");
                 score += row[i];
                 row[i + 1] = 0;
-
-                // 🔊 Play score point sound on every tile merge
-                if (window.AudioManager) AudioManager.play('score_point');
-
-                // 🔊 Play win fanfare the first time player reaches 2048
-                if (row[i] === 2048 && !hasWon) {
-                    hasWon = true;
-                    if (window.AudioManager) AudioManager.play('game_win');
-                }
             }
         }
         return row;
@@ -348,50 +338,70 @@ function init2048Game() {
     function checkGameOver() {
         for (let r = 0; r < 4; r++) {
             for (let c = 0; c < 4; c++) {
-                if (board[r][c] === 0) return false;
-                if (c < 3 && board[r][c] === board[r][c + 1]) return false;
-                if (r < 3 && board[r][c] === board[r + 1][c]) return false;
+                
+                if (board[r][c] === 0)
+                    return false;
+
+                
+                if (
+                    c < 3 &&
+                    board[r][c] === board[r][c + 1]
+                )
+                    return false;
+
+                
+                if (
+                    r < 3 &&
+                    board[r][c] === board[r + 1][c]
+                )
+                    return false;
             }
         }
+
         return true;
     }
 
     function makeMove(dir) {
+
         let moved = false;
 
-        if (dir === "left")  moved = moveLeft();
+        if (dir === "left") moved = moveLeft();
         if (dir === "right") moved = moveRight();
-        if (dir === "up")    moved = moveUp();
-        if (dir === "down")  moved = moveDown();
+        if (dir === "up") moved = moveUp();
+        if (dir === "down") moved = moveDown();
 
-        const gameMessage = document.getElementById("game-message");
+        const gameMessage =
+            document.getElementById("game-message");
 
         if (moved) {
+
             gameMessage.textContent = "";
+
             addNewTile();
 
             if (checkGameOver()) {
                 gameMessage.textContent = "GAME OVER!";
-                // 🔊 Play game over sound when board is completely stuck
-                if (window.AudioManager) AudioManager.play('game_over');
+                if (window.AudioManager) AudioManager.play("game_over");
             }
 
             drawBoard();
+
         } else {
+
             if (checkGameOver()) {
                 gameMessage.textContent = "GAME OVER!";
-                // 🔊 Play game over sound when no moves remain
-                if (window.AudioManager) AudioManager.play('game_over');
+                if (window.AudioManager) AudioManager.play("game_over");
             } else {
-                gameMessage.textContent = "No move possible in this direction!";
+                gameMessage.textContent =
+                    "No move possible in this direction!";
             }
         }
     }
 
     // On-Screen Controls Configuration
-    document.getElementById("ctrl-2048-up").onclick    = () => makeMove("up");
-    document.getElementById("ctrl-2048-down").onclick  = () => makeMove("down");
-    document.getElementById("ctrl-2048-left").onclick  = () => makeMove("left");
+    document.getElementById("ctrl-2048-up").onclick = () => makeMove("up");
+    document.getElementById("ctrl-2048-down").onclick = () => makeMove("down");
+    document.getElementById("ctrl-2048-left").onclick = () => makeMove("left");
     document.getElementById("ctrl-2048-right").onclick = () => makeMove("right");
 
     // Restart Handling
@@ -403,10 +413,10 @@ function init2048Game() {
             window.removeEventListener("keydown", handleKeyDown);
             return;
         }
-        if (e.key === "ArrowLeft")  { e.preventDefault(); makeMove("left");  }
+        if (e.key === "ArrowLeft") { e.preventDefault(); makeMove("left"); }
         if (e.key === "ArrowRight") { e.preventDefault(); makeMove("right"); }
-        if (e.key === "ArrowUp")    { e.preventDefault(); makeMove("up");    }
-        if (e.key === "ArrowDown")  { e.preventDefault(); makeMove("down");  }
+        if (e.key === "ArrowUp") { e.preventDefault(); makeMove("up"); }
+        if (e.key === "ArrowDown") { e.preventDefault(); makeMove("down"); }
     };
     window.addEventListener("keydown", handleKeyDown);
 
@@ -430,13 +440,14 @@ function init2048Game() {
         }
     }
 
+
     gridContainer.addEventListener('touchstart', e => {
         e.preventDefault();
         touchStartX = e.changedTouches[0].screenX;
         touchStartY = e.changedTouches[0].screenY;
     }, { passive: false });
 
-    gridContainer.addEventListener('touchend', e => {
+        gridContainer.addEventListener('touchend', e => {
         e.preventDefault();
         let touchEndX = e.changedTouches[0].screenX;
         let touchEndY = e.changedTouches[0].screenY;
@@ -446,14 +457,14 @@ function init2048Game() {
         let moved = false;
 
         if (Math.abs(dx) > Math.abs(dy)) {
-            if (dx > 30)       moved = moveRight();
+            if (dx > 30) moved = moveRight();
             else if (dx < -30) moved = moveLeft();
         } else {
-            if (dy > 30)       moved = moveDown();
+            if (dy > 30) moved = moveDown();
             else if (dy < -30) moved = moveUp();
         }
 
-        if (moved) {
+        if(moved) {
             addNewTile();
             drawBoard();
         }

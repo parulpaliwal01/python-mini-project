@@ -370,6 +370,69 @@ body.sidebar-active .sidebar-dock {
   background: rgba(255, 255, 255, 0.04) !important;
 }
 
+/* ── Search Kbd Hint Popup ─────────────────────────────────── */
+.search-kbd-hint {
+  position: fixed;
+  top: 148px;               
+  left: 308px;              
+  transform: translateY(-39px) translateX(-37px);
+  background: var(--surface);
+  border: 1px solid var(--border-accent);
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  box-shadow: var(--shadow-md), 0 0 16px var(--accent-glow);
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out-expo),
+              transform 0.3s var(--ease-out-expo);
+}
+
+/* Arrow pointing LEFT back toward the sidebar */
+.search-kbd-hint::before {
+  content: '';
+  position: absolute;
+  bottom: 1px;
+  left: -2px;
+  transform: rotate(112deg);
+  width: 8px;
+  height: 8px;
+  background: var(--surface);
+  border-right: 1px solid var(--border-accent);
+  border-bottom: 1px solid var(--border-accent);
+}
+
+.search-kbd-hint kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: var(--bg-glass);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.4;
+  box-shadow: 0 1px 0 var(--border);
+}
+
+.search-kbd-hint.visible {
+  opacity: 1;
+}
+
+/* Hide on mobile — sidebar behaves differently */
+@media (max-width: 1100px) {
+  .search-kbd-hint {
+    display: none;
+  }
+}
+
 /* Sidebar Controls bounce */
 .sidebar-controls button {
   position: relative;
@@ -2389,6 +2452,29 @@ body.sidebar-active .hero-controls {
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
+}
+
+@keyframes searchPulse {
+  0% {
+    box-shadow: 0 0 0px rgba(0, 255, 200, 0);
+    transform: scale(1);
+  }
+  20% {
+    box-shadow: 0 0 18px rgba(0, 255, 200, 0.6);
+    transform: scale(1.02);
+  }
+  60% {
+    box-shadow: 0 0 10px rgba(0, 255, 200, 0.3);
+    transform: scale(1.01);
+  }
+  100% {
+    box-shadow: 0 0 0px rgba(0, 255, 200, 0);
+    transform: scale(1);
+  }
+}
+
+.search-box.flash {
+  animation: searchPulse 1.2s ease-in-out;
 }
 
 /* ── Empty State ───────────────────────────────────────────── */

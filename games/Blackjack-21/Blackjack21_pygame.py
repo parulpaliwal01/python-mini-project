@@ -13,7 +13,7 @@ WIDTH, HEIGHT = 800, 600
 FPS = 60
 
 # Colors
-BG_COLOR = (14, 89, 31)     # Casino Green
+BG_COLOR = (14, 89, 31) 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (220, 0, 0)
@@ -83,14 +83,14 @@ def draw_card(card, x, y, hidden=False):
         suit = card[-1]
         color = RED if suit in ['H', 'D'] else BLACK
         
-        # --- Top Left (Rank Only) ---
+        # --- Top Left ---
         draw_text(rank, small_font, color, x + 5, y + 5)
         
-        # --- Center (Parametric Vector Suit) ---
+        # --- Center ---
         large_suit = get_suit_surface(suit, color, 45)
         screen.blit(large_suit, (x + 17, y + 37))
         
-        # --- Bottom Right (Inverted Rank Only) ---
+        # --- Bottom Right ---
         rank_surf = small_font.render(rank, True, color)
         rank_surf_inv = pygame.transform.rotate(rank_surf, 180)
         screen.blit(rank_surf_inv, (x + 75 - rank_surf_inv.get_width(), y + 115 - rank_surf_inv.get_height()))

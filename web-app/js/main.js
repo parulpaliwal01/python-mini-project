@@ -263,6 +263,20 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+    /* ── Desktop Sidebar Toggle ──────────────────────────────── */
+  var desktopSidebarToggle = document.getElementById("sidebarCollapseBtn");
+  if (desktopSidebarToggle && mainSidebar) {
+    desktopSidebarToggle.addEventListener("click", function () {
+      var collapsed = mainSidebar.classList.toggle("collapsed");
+      document.body.classList.toggle("sidebar-collapsed", collapsed);
+
+      var icon = desktopSidebarToggle.querySelector("i");
+      if (icon) {
+        icon.className = collapsed ? "fas fa-chevron-right" : "fas fa-chevron-left";
+      }
+    });
+  }
+
   if (backToTopButton) {
     var toggleBackToTop = function () {
       backToTopButton.classList.toggle('visible', window.scrollY > 300);

@@ -28,13 +28,24 @@ function escapeHtml(str) {
   return d.innerHTML;
 }
 
-function safeRun(fn) {
-  try {
-    fn();
-  } catch (e) {
-    console.error("Project initialization error:", e);
-  }
+function setMainInert(isInert) {
+  var main = document.getElementById('main-content');
+  if (!main) return;
+  if (isInert) main.setAttribute('inert', ''); else main.removeAttribute('inert');
 }
+
+var modal = null;
+var modalBody = null;
+var modalClose = null;
+var modalTitle = null;
+var removeTrap = null;
+var lastFocusedElement = null;
+var currentCategory = 'all';
+var currentSearchQuery = '';
+var playgroundActive = false;
+var selectedSuggestionIndex = -1;
+var projectCards = [];
+var recentSearches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
 
 // ============================================
 // INFO MODAL FUNCTIONS
@@ -94,11 +105,50 @@ function setupModalInfoButton(projectName) {
 
 /* ── DOMContentLoaded ──────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', function () {
+  function repairLegacyHomeLayoutNow() {
+    var legacyHost = document.querySelector('.hero-code-snippets')
+      ? document.querySelector('.hero-code-snippets').closest('.hero-section')
+      : null;
+
+    if (!legacyHost) {
+      return;
+    }
+
+    var allMains = Array.from(document.querySelectorAll('main#main-content'));
+    var visibleMain = allMains[1] || allMains[0] || null;
+    var timelineSectionNode = document.getElementById('timelineSection');
+    var projectsSectionNode = document.getElementById('projectsSection');
+    var playgroundSectionNode = document.getElementById('playgroundSection');
+    var footerNode = document.querySelector('footer.footer');
+    var backToTopNode = document.getElementById('backToTop');
+    var infoModalNode = document.getElementById('infoModalOverlay');
+    var sidebarDockNode = document.getElementById('mainSidebar');
+    var mobileToggleNode = document.getElementById('mobileSidebarToggle');
+    var heroControlsNode = document.querySelector('.hero-controls');
+    var fragment = document.createDocumentFragment();
+
+    if (mobileToggleNode) fragment.appendChild(mobileToggleNode);
+    if (sidebarDockNode) fragment.appendChild(sidebarDockNode);
+    if (visibleMain) fragment.appendChild(visibleMain);
+    if (footerNode) fragment.appendChild(footerNode);
+    if (backToTopNode) fragment.appendChild(backToTopNode);
+    if (infoModalNode) fragment.appendChild(infoModalNode);
+    if (heroControlsNode) heroControlsNode.remove();
+
+    document.body.appendChild(fragment);
+
+    legacyHost.classList.add('legacy-home-hero');
+  }
+
+  repairLegacyHomeLayoutNow();
+  window.addEventListener('load', repairLegacyHomeLayoutNow, { once: true });
+
   var html = document.documentElement;
-  var themeToggle = document.getElementById('themeToggle');
-  var soundToggle = document.getElementById('soundToggle');
+  var themeToggle = document.querySelector('.sidebar-dock #themeToggle');
+  var soundToggle = document.querySelector('.sidebar-dock #soundToggle');
   var backToTopButton = document.getElementById('backToTop');
-  var searchInput = document.getElementById('searchInput');
+  var searchInput = document.querySelector('.sidebar-dock #searchInput');
+  var navSearchInput = document.getElementById('navSearchInput');
   var searchDropdown = document.getElementById('searchDropdown');
   var searchLoader = document.getElementById('searchLoader');
   var recentSearchesList = document.getElementById('recentSearchesList');
@@ -113,17 +163,17 @@ document.addEventListener('DOMContentLoaded', function () {
   var stickyTabs = document.querySelectorAll('.sticky-tab');
   var heroSection = document.querySelector('.hero-section');
   var cursorGlow = document.getElementById('cursorGlow');
-  var heroProjectCount = document.getElementById('heroProjectCount');
-  var heroGameCount = document.getElementById('heroGameCount');
-  var heroMathCount = document.getElementById('heroMathCount');
-  var heroUtilityCount = document.getElementById('heroUtilityCount');
-  var modal = document.getElementById('projectModal');
-  var modalBody = document.getElementById('modalBody');
-  var modalClose = document.getElementById('modalClose');
-  var modalTitle = document.getElementById('modalDialogTitle');
+  var heroProjectCounts = document.querySelectorAll('#heroProjectCount');
+  var heroGameCounts = document.querySelectorAll('#heroGameCount');
+  var heroMathCounts = document.querySelectorAll('#heroMathCount');
+  var heroUtilityCounts = document.querySelectorAll('#heroUtilityCount');
+  modal = document.getElementById('projectModal');
+  modalBody = document.getElementById('modalBody');
+  modalClose = document.getElementById('modalClose');
+  modalTitle = document.getElementById('modalDialogTitle');
   var exploreBtn = document.getElementById('exploreBtn');
   var randomProjectBtn = document.getElementById('randomProjectBtn');
-  var randomProjectBtnSidebar = document.getElementById('randomProjectBtnSidebar');
+  var randomProjectBtnSidebar = document.querySelector('.projects-section #randomProjectBtnSidebar');
   var emptyState = document.getElementById('emptyState');
   var emptyStateHint = document.getElementById('emptyStateHint');
   var projectCountBadge = document.getElementById('projectCountBadge');
@@ -131,20 +181,18 @@ document.addEventListener('DOMContentLoaded', function () {
   var navControls = document.getElementById('navControls');
   var navbar = document.getElementById('mainNavbar');
 
-  var currentCategory = 'all';
-  var currentSearchQuery = '';
-  var playgroundActive = false;
-  var selectedSuggestionIndex = -1;
-  var removeTrap = null;
-  var lastFocusedElement = null;
-  var projectCards = [];
-  var recentSearches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+  function syncSearchInputs(value, sourceInput) {
+    [searchInput, navSearchInput].forEach(function (input) {
+      if (input && input !== sourceInput && input.value !== value) {
+        input.value = value;
+      }
+    });
+  }
 
-  /* ── Helper: setMainInert ─────────────────────────────────── */
-  function setMainInert(isInert) {
-    var main = document.getElementById('main-content');
-    if (!main) return;
-    if (isInert) main.setAttribute('inert', ''); else main.removeAttribute('inert');
+  function syncCountNodes(nodes, value) {
+    Array.from(nodes || []).forEach(function (node) {
+      node.textContent = value;
+    });
   }
 
   /* ── Theme Toggle ─────────────────────────────────────────── */
@@ -335,10 +383,10 @@ document.addEventListener('DOMContentLoaded', function () {
   var mathCount = projectCards.filter(function (c) { return c.getAttribute('data-category') === 'math'; }).length;
   var utilityCount = projectCards.filter(function (c) { return c.getAttribute('data-category') === 'utilities'; }).length;
 
-  if (heroProjectCount) heroProjectCount.textContent = String(totalCount);
-  if (heroGameCount) heroGameCount.textContent = String(gameCount);
-  if (heroMathCount) heroMathCount.textContent = String(mathCount);
-  if (heroUtilityCount) heroUtilityCount.textContent = String(utilityCount);
+  syncCountNodes(heroProjectCounts, String(totalCount));
+  syncCountNodes(heroGameCounts, String(gameCount));
+  syncCountNodes(heroMathCounts, String(mathCount));
+  syncCountNodes(heroUtilityCounts, String(utilityCount));
   if (projectCountBadge) projectCountBadge.textContent = String(totalCount) + ' projects';
 
   /* ── Explore Button ───────────────────────────────────────── */
@@ -349,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ── Category Filtering ───────────────────────────────────── */
-  var sidebarTabs = document.querySelectorAll('.sidebar-tab');
+  var sidebarTabs = document.querySelectorAll('.sidebar-dock .sidebar-tab');
   var sidebarBadge = null;
 
   function applyCategoryFilter(category) {
@@ -439,10 +487,6 @@ document.addEventListener('DOMContentLoaded', function () {
       var category = st.getAttribute("data-category");
 
       var pageCategory = document.body.getAttribute("data-page");
-      // FIX #1: Only redirect when on a subpage AND the clicked category
-      // is different from the current page. Without this guard, every click
-      // on the homepage (or any page with data-page set) triggered a redirect
-      // instead of filtering the grid in place.
       if (pageCategory && category !== pageCategory) {
         var pageMap = {
           'all': 'index.html',
@@ -554,44 +598,6 @@ document.addEventListener('DOMContentLoaded', function () {
     document.body.classList.add('sidebar-active');
   }
 
-  /* ── Search Kbd Hint on Sidebar Activation ─────────────────── */
-  var searchKbdHint = document.getElementById('searchKbdHint');
-  var kbdHintTimer;
-
-  function showKbdHint() {
-    if (!searchKbdHint) return;
-    clearTimeout(kbdHintTimer);
-    searchKbdHint.classList.add('visible');
-    kbdHintTimer = setTimeout(function () {
-      searchKbdHint.classList.remove('visible');
-    }, 3000); // auto-dismiss after 3s
-  }
-
-  // Watch for sidebar-active class being added to body
-  var bodyClassObserver = new MutationObserver(function (mutations) {
-    mutations.forEach(function (mutation) {
-      if (mutation.attributeName === 'class') {
-        var isActive = document.body.classList.contains('sidebar-active');
-        if (isActive) {
-          showKbdHint();
-        } else {
-          clearTimeout(kbdHintTimer);
-          if (searchKbdHint) searchKbdHint.classList.remove('visible');
-        }
-      }
-    });
-  });
-
-  bodyClassObserver.observe(document.body, { attributes: true });
-
-  // Hide hint when user focuses the search input
-  if (searchInput) {
-    searchInput.addEventListener('focus', function () {
-      clearTimeout(kbdHintTimer);
-      if (searchKbdHint) searchKbdHint.classList.remove('visible');
-    });
-  }
-
   /* ═══════════════════════════════════════════════════════════════
      SEARCH
      ═══════════════════════════════════════════════════════════════ */
@@ -677,7 +683,7 @@ document.addEventListener('DOMContentLoaded', function () {
         item.append(text, removeBtn);
 
         label.addEventListener('click', function () {
-          if (searchInput) searchInput.value = search;
+          syncSearchInputs(search, searchInput);
           currentSearchQuery = search;
           performSearch();
           closeDropdown();
@@ -827,32 +833,37 @@ document.addEventListener('DOMContentLoaded', function () {
     if (projectCountBadge) projectCountBadge.textContent = String(visibleCount) + ' projects';
   }
 
-  if (searchInput) {
+  var searchInputs = [searchInput, navSearchInput].filter(Boolean);
+  if (searchInputs.length) {
     var debouncedSearch = debounce(function (query) {
       renderSuggestions(query);
     }, 200);
 
-    searchInput.addEventListener('input', function (e) {
-      var query = e.target.value.trim().toLowerCase();
-      currentSearchQuery = query;
-      if (searchLoader) searchLoader.style.display = query ? 'block' : 'none';
-      debouncedSearch(query);
-      performSearch();
-    });
+    searchInputs.forEach(function (input) {
+      input.addEventListener('input', function (e) {
+        var rawValue = e.target.value;
+        var query = rawValue.trim().toLowerCase();
+        syncSearchInputs(rawValue, e.target);
+        currentSearchQuery = query;
+        if (searchLoader) searchLoader.style.display = query ? 'block' : 'none';
+        debouncedSearch(query);
+        performSearch();
+      });
 
-    searchInput.addEventListener('focus', function () {
-      if (searchDropdown) searchDropdown.classList.add('active');
-      if (!currentSearchQuery) renderRecentSearches();
-    });
+      input.addEventListener('focus', function () {
+        if (input === searchInput && searchDropdown) searchDropdown.classList.add('active');
+        if (input === searchInput && !currentSearchQuery) renderRecentSearches();
+      });
 
-    searchInput.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') { closeDropdown(); searchInput.blur(); }
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { closeDropdown(); input.blur(); }
+      });
     });
   }
 
   document.addEventListener('click', function (e) {
     if (searchDropdown && searchInput &&
-        !searchDropdown.contains(e.target) && e.target !== searchInput) {
+        !searchDropdown.contains(e.target) && e.target !== searchInput && e.target !== navSearchInput) {
       closeDropdown();
     }
   });
@@ -860,7 +871,8 @@ document.addEventListener('DOMContentLoaded', function () {
   document.addEventListener('keydown', function (e) {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
       e.preventDefault();
-      if (searchInput) searchInput.focus();
+      if (navSearchInput) navSearchInput.focus();
+      else if (searchInput) searchInput.focus();
     }
   });
 
@@ -875,16 +887,6 @@ document.addEventListener('DOMContentLoaded', function () {
       return !el.closest('[aria-hidden="true"]') && !el.classList.contains('visually-hidden');
     });
   }
-  var sel =
-    'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-
-  return Array.from(root.querySelectorAll(sel)).filter(function (el) {
-    return (
-      !el.closest('[aria-hidden="true"]') &&
-      !el.classList.contains("visually-hidden")
-    );
-  });
-
 
   function trapFocus(modalEl) {
     var handler = function (e) {
@@ -911,7 +913,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     document.body.style.paddingRight = scrollbarWidth + 'px';
     document.body.style.overflow = 'hidden';
-    setMainInert(true);
+    window.setMainInert(true);
 
     safeRun(function () {
       if (typeof getProjectHTML === 'function') {
@@ -980,7 +982,7 @@ if (projectContent) {
     modal.setAttribute('aria-hidden', 'true');
     document.body.style.paddingRight = '';
     document.body.style.overflow = '';
-    setMainInert(false);
+    window.setMainInert(false);
     if (removeTrap) { removeTrap(); removeTrap = null; }
     if (modalBody) {
       modalBody.innerHTML = '';
@@ -1004,13 +1006,6 @@ if (projectContent) {
   /* ── Expose for inline use ────────────────────────────────── */
   window.openProjectSafe = openProjectSafe;
   window.closeProjectSafe = closeProjectSafe;
-
-  // FIX #3: Removed the duplicate delegated document click listener for
-  // ".btn-play" that used to live here. It conflicted with the per-card
-  // listeners wired below: the direct listener called stopPropagation(),
-  // which silently ate the event before the delegated one could fire,
-  // so neither handler reliably opened the modal. The per-card listeners
-  // below are sufficient and correct on their own.
 
   /* ═══════════════════════════════════════════════════════════════
      WIRE PROJECT CARDS
@@ -1361,20 +1356,6 @@ if (projectContent) {
     revealItems.forEach(function (item) { item.classList.add('is-visible'); });
   }
 
-  /* ── Footer category links ────────────────────────────────── */
-  document.querySelectorAll('.footer-cat-link').forEach(function (a) {
-    a.addEventListener('click', function (e) {
-      e.preventDefault();
-      var cat = a.getAttribute('data-cat');
-      var tab = document.querySelector('.sidebar-tab[data-category="' + cat + '"]');
-    });
-  });  
-
-  // FIX #2: Footer links call tab.click() which triggers the sidebar tab
-  // handler. That handler now correctly filters in place on the homepage
-  // (fix #1), so footer links automatically work once fix #1 is applied.
-  // No additional changes needed here beyond the comment for clarity.
-  
   document.querySelectorAll(".footer-cat-link").forEach(function (link) {
     link.addEventListener("click", function (e) {
       e.preventDefault();

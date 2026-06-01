@@ -36,7 +36,7 @@
 <div class="navbar-brand">
 <a class="logo-wrap" href="#">
 <!-- LOGO IMAGE -->
-<img alt="PyMini Logo" class="navbar-logo" src="assets/logo.png"/>
+<img alt="PyMini Logo" class="navbar-logo" src="assets/favicon.svg"/>
 <!-- TEXT -->
 <div class="logo-text">
     <span class="logo-py">py</span>
@@ -52,7 +52,7 @@
 <!-- CENTER SEARCH -->
 <div class="search-box">
 <i class="fas fa-search"></i>
-<input aria-label="Search projects" id="searchInput" placeholder="Search projects or games..." type="text"/>
+<input aria-label="Search projects" id="navSearchInput" placeholder="Search projects or games..." type="text"/>
 </div>
 <!-- HAMBURGER TOGGLE (mobile) -->
 <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle navigation menu" aria-expanded="false">
@@ -69,8 +69,6 @@
 </div>
 </div>
 </nav>
-<!-- ── Sticky Category Filter Bar ─────────────────────────────── -->
-<!-- Appears below navbar when user scrolls past the hero section  -->
 <main id="main-content" tabindex="-1">
     <section class="hero-section" aria-label="Welcome">
         <canvas aria-hidden="true" id="boardCanvas"></canvas>
@@ -87,44 +85,6 @@
         </div>
         <div class="container">
             <div class="hero-shell">
-                <aside class="filter-sidebar" role="tablist" aria-label="Filter by category">
-                    <div class="sidebar-header">
-                        <span class="sidebar-title">explore</span>
-                        <span class="sidebar-badge" id="sidebarProjectCount">0</span>
-                    </div>
-                    <button aria-selected="true" class="sidebar-tab active" data-category="all" role="tab" tabindex="0">
-                        <span class="sidebar-icon"><i data-lucide="layers"></i></span>
-                        <span class="sidebar-label">all projects</span>
-                    </button>
-                    <button aria-selected="false" class="sidebar-tab" data-category="games" role="tab" tabindex="-1">
-                        <span class="sidebar-icon"><i data-lucide="gamepad-2"></i></span>
-                        <span class="sidebar-label">games</span>
-                    </button>
-                    <button aria-selected="false" class="sidebar-tab" data-category="math" role="tab" tabindex="-1">
-                        <span class="sidebar-icon"><i data-lucide="sigma"></i></span>
-                        <span class="sidebar-label">math</span>
-                    </button>
-                    <button aria-selected="false" class="sidebar-tab" data-category="utilities" role="tab" tabindex="-1">
-                        <span class="sidebar-icon"><i data-lucide="wrench"></i></span>
-                        <span class="sidebar-label">utilities</span>
-                    </button>
-                    <button aria-selected="false" class="sidebar-tab" data-category="favorites" role="tab" tabindex="-1">
-                        <span class="sidebar-icon"><i data-lucide="star"></i></span>
-                        <span class="sidebar-label">⭐ favorites</span>
-                    </button>
-                    <button aria-selected="false" class="sidebar-tab" data-category="tracker" role="tab" tabindex="-1">
-                    <span class="sidebar-icon"><i data-lucide="trophy"></i></span>
-                    <span class="sidebar-label">🏆 my progress</span>
-                    </button>
-                    <div class="sidebar-divider"></div>
-                    <button aria-selected="false" class="sidebar-tab playground-tab" data-category="playground" id="playgroundTab" role="tab" tabindex="-1">
-                        <span class="sidebar-icon"><i data-lucide="terminal"></i></span>
-                        <span class="sidebar-label">🐍 playground</span>
-                    </button>
-                    <button class="sidebar-random-btn" id="randomProjectBtnSidebar" title="Discover a random project!" type="button">
-                        <i data-lucide="shuffle"></i> surprise me
-                    </button>
-                </aside>
                 <div class="hero-content">
                 <div class="hero-kicker">Python arcade for curious beginners</div>
                 <div class="hero-title-wrapper">
@@ -139,6 +99,7 @@
                     </div>
                 </div>
                 <p class="hero-subtitle">Jump into browser-ready games, math experiments, and utility labs that feel rewarding from the first click.</p>
+                <p class="hero-search-note">Press <kbd>Ctrl</kbd> + <kbd>K</kbd> to focus search.</p>
 
                 <div aria-live="polite" class="hero-typing">
                     <span class="typing-label">Now loading:</span>
@@ -190,7 +151,6 @@
             <ul>
               <li>Type a project name — <code>snake</code>, <code>quiz</code></li>
               <li>Filter by tag — <code>game</code>, <code>math</code>, <code>utility</code></li>
-              <!-- <li>Press <code>Ctrl+K</code> to focus search</li> -->
             </ul>
           </div>
           <div class="no-results-message" id="noResultsMessage" style="display:none">No projects found. Try a different keyword.</div>
@@ -272,13 +232,6 @@
                     <h3>Progress Tracker</h3>
                     <p>Track your completed mini projects!</p>
                 </div>
-   
-    
-                        <img class="card-banner" src="assets/banners/color-palette.jpg" alt="Color Palette Suggestor" loading="lazy">
-                        <div class="card-actions"><button class="btn-play">Try It</button></div>
-                        <h3>Color Palette Suggestor</h3>
-                        <p>Generate palettes + CSS snippets for any website type and mood!</p>
-                    </div>
                     <div class="project-card" data-category="utilities" data-project="resume-analyzer" data-tags="utility,resume,ats,career,analysis,keywords">
                       <img class="card-banner" src="assets/banners/resume-analyzer.jpg" alt="AI Resume Analyzer" loading="lazy">
                       <div class="card-actions"><button class="btn-play">Try It</button></div>
@@ -357,6 +310,12 @@
                         <h3>Number Converter</h3>
                         <p>Convert Dec, Bin, Oct, and Hex!</p>
                     </div>
+                      <div class="project-card" data-category="utilities" data-project="productive-pet" data-tags="utility,pet,productivity,habit,focus">
+                        <img class="card-banner" src="assets/banners/productive-pet.svg" alt="Productive Pet" loading="lazy">
+                        <div class="card-actions"><button class="btn-play">Try It</button></div>
+                        <h3>Productive Pet</h3>
+                        <p>Grow your pet by staying focused and productive!</p>
+                      </div>
                     <div class="project-card" data-category="games" data-project="number-guessing" data-tags="game,logic,loops,conditional">
                         <img class="card-banner" src="assets/banners/number-guessing.jpg" alt="Number Guessing" loading="lazy">
                         <div class="card-actions"><button class="btn-play">Try It</button></div>
@@ -429,6 +388,12 @@
                         <h3>Word Scramble</h3>
                         <p>Unscramble words before attempts run out!</p>
                     </div>
+                      <div class="project-card" data-category="games" data-project="spot-the-difference" data-tags="game,spot,difference,observation,puzzle">
+                        <img class="card-banner" src="assets/banners/spot-the-difference.svg" alt="Spot the Difference" loading="lazy">
+                        <div class="card-actions"><button class="btn-play">Try It</button></div>
+                        <h3>Spot the Difference</h3>
+                        <p>Find all hidden changes before time runs out!</p>
+                      </div>
                 </div>
 
                 <div id="emptyState" class="empty-state" style="display: none;">
@@ -560,6 +525,17 @@
     </div>
   </div>
 </section>
+
+
+<!-- ── Sticky Project Filter ───────────────────────────────── -->
+<div class="sticky-filter-bar visible" id="stickyFilterBar" aria-label="Project category filters">
+  <button aria-selected="true" class="sticky-tab active" data-sticky-category="all" role="tab" tabindex="0" type="button">All</button>
+  <button aria-selected="false" class="sticky-tab" data-sticky-category="games" role="tab" tabindex="-1" type="button">Games</button>
+  <button aria-selected="false" class="sticky-tab" data-sticky-category="math" role="tab" tabindex="-1" type="button">Math</button>
+  <button aria-selected="false" class="sticky-tab" data-sticky-category="utilities" role="tab" tabindex="-1" type="button">Utilities</button>
+  <button aria-selected="false" class="sticky-tab" data-sticky-category="favorites" role="tab" tabindex="-1" type="button">Favorites</button>
+  <button aria-selected="false" class="sticky-tab" data-sticky-category="playground" role="tab" tabindex="-1" type="button">Playground</button>
+</div>
 
 <!-- ── Timeline Section ─────────────────────────────────────── -->
 <section class="hero-timeline-section" id="timelineSection">
@@ -793,7 +769,7 @@
 </footer>
 
 <!-- ── SCRIPTS ──────────────────────────────────────────────── -->
-<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <script src="js/audio.js"></script>
 <script src="js/audioManager.js"></script>
 <script src="js/projects/rock-paper-scissor.js"></script>
@@ -841,7 +817,6 @@
         window.playgroundAPI is defined when main.js runs.
         No Pyodide CDN tag here — Pyodide is injected lazily.
     -->
-<script src="js/projects.js"></script>
 <!-- CodeMirror 6 – syntax-highlighted Python editor (local bundle) -->
 <script src="js/cm-editor.js"></script>
 <script src="js/playground.js"></script>
@@ -849,10 +824,60 @@
 <script src="js/hero-canvas.js"></script>
 <script>lucide.createIcons();</script>
 <script src="js/fix.js"></script> 
+<script>
+(function () {
+  var projectAliases = {
+    'blackjack(21)': 'blackjack-21'
+  };
 
-    <div class="search-kbd-hint" id="searchKbdHint" aria-hidden="true">
-      Press <kbd>Ctrl</kbd><span>+</span><kbd>K</kbd> to focus search
-    </div>      
+  function resolveProjectName(projectName) {
+    return projectAliases[projectName] || projectName;
+  }
+
+  function bindFallbackProjectButtons() {
+    var projectCards = document.querySelectorAll('.project-card');
+
+    projectCards.forEach(function (card) {
+      var playButton = card.querySelector('.btn-play'); 
+      var projectName = card.getAttribute('data-project');
+
+      if (!playButton || !projectName || playButton.getAttribute('aria-label')) {
+        return;
+      }
+
+      var resolvedProjectName = resolveProjectName(projectName);
+      var titleNode = card.querySelector('h3');
+      var buttonLabel = titleNode ? 'Open ' + titleNode.textContent : 'Open project';
+
+      playButton.setAttribute('aria-label', buttonLabel);
+
+      playButton.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (typeof window.openProjectSafe === 'function') {
+          window.openProjectSafe(resolvedProjectName, playButton);
+        }
+      });
+
+      card.addEventListener('click', function (event) {
+        if (event.target.closest('.btn-play') || event.target.closest('.btn-favorite') || event.target.closest('.btn-share')) {
+          return;
+        }
+
+        if (typeof window.openProjectSafe === 'function') {
+          window.openProjectSafe(resolvedProjectName, card);
+        }
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindFallbackProjectButtons, { once: true });
+  } else {
+    bindFallbackProjectButtons();
+  }
+})();
+</script>
 
 <!-- Info Modal Popup -->
 <div id="infoModalOverlay" class="info-modal-overlay">

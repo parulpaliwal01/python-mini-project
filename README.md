@@ -81,6 +81,68 @@ python-mini-project/
 - Utility tools for practical use cases
 - A web app version for browser-based access
 
+## 🌐 Web App Catalog
+
+The browser app currently exposes 38 projects:
+
+### Games
+- 2048 Game
+- BlackJack21
+- Coin Flip
+- Dice Rolling
+- Dots & Boxes AI
+- Emoji Memory Game
+- FLAMES Game
+- Flappy Game
+- Hangman
+- Math Quiz
+- Number Guessing
+- Password Forge
+- Rock Paper Scissors
+- Simon Says
+- Snake Game
+- Whack-a-Mole
+- Word Scramble
+- Spot the Difference
+
+### Math
+- AP/GP/AGP/HP Recognizer
+- Armstrong Numbers
+- Binary Search
+- Bubble Sort
+- Calculator
+- Collatz Conjecture
+- Coordinate to Polar
+- Derivative Calculator
+- Fibonacci Series
+- Pascal's Triangle
+- Prime Analyzer
+- Projectile Motion
+- Progress Tracker
+
+### Utilities
+- AI Resume Analyzer
+- Color Palette Suggestor
+- Morse Code
+- Number Converter
+- Productive Pet
+- Tower of Hanoi
+- Typing Speed Tester
+
+## 🧭 Python Projects Without a Web App Yet
+
+These standalone Python project files do not have a browser counterpart yet and are good future-port candidates:
+
+- [games/Number-Sliding-Puzzle/Number-Sliding-Puzzle.py](games/Number-Sliding-Puzzle/Number-Sliding-Puzzle.py)
+- [games/Reverse-Hangman-Game/Reverse-Hangman-Game.py](games/Reverse-Hangman-Game/Reverse-Hangman-Game.py)
+- [games/War-Card-Game/War-Card-Game.py](games/War-Card-Game/War-Card-Game.py)
+- [math/Happy-Number/Happy-Number.py](math/Happy-Number/Happy-Number.py)
+- [math/Matrix-Calculator/Matrix-Calculator.py](math/Matrix-Calculator/Matrix-Calculator.py)
+- [math/Quadratic-Solver/Quadratic-Solver.py](math/Quadratic-Solver/Quadratic-Solver.py)
+- [utilities/Budget-Tracker/budget_tracker.py](utilities/Budget-Tracker/budget_tracker.py)
+- [utilities/Caesar-Cipher/Caesar-Cipher.py](utilities/Caesar-Cipher/Caesar-Cipher.py)
+- [utilities/Fake-News-Headline-Generator/Fake-News-Headline-Generator.py](utilities/Fake-News-Headline-Generator/Fake-News-Headline-Generator.py)
+
 ---
 
 ## Contributors

@@ -167,7 +167,7 @@ function initArmstrong() {
     const exampleBtns = document.querySelectorAll('.example-btn');
 
     function showError(msg) {
-        resultDiv.innerHTML = `
+        resultDiv.textContent = `
             <p style="color: var(--danger-color); font-weight: 600;">
                 ⚠️ ${msg}
             </p>
@@ -206,7 +206,7 @@ function initArmstrong() {
 
         const isArmstrong = sum === num;
 
-        resultDiv.innerHTML = `
+        resultDiv.textContent = `
             <div class="armstrong-result">
                 <div class="result-header ${isArmstrong ? 'is-armstrong' : 'not-armstrong'}">
                     ${isArmstrong ? '✅ Armstrong Number!' : '❌ Not an Armstrong Number'}

@@ -454,7 +454,7 @@ function initHangman() {
 
     // ── Keyboard UI 
     function createKeyboard() {
-        keyboard.innerHTML = '';
+        keyboard.textContent = '';
         'abcdefghijklmnopqrstuvwxyz'.split('').forEach(letter => {
             const btn = document.createElement('button');
             btn.className       = 'key-btn';
@@ -467,7 +467,7 @@ function initHangman() {
 
     // ── Word display 
     function updateWordDisplay() {
-        wordDisplay.innerHTML = '';
+        wordDisplay.textContent = '';
         for (const letter of currentWord) {
             const box       = document.createElement('div');
             box.className   = 'letter-box';
@@ -508,11 +508,11 @@ function initHangman() {
 
             if (wrongAttempts >= maxAttempts) {
                 gameOver = true;
-                gameMessage.innerHTML = ` Game Over! The word was: <strong>${currentWord.toUpperCase()}</strong>`;
+                gameMessage.textContent = ` Game Over! The word was: <strong>${currentWord.toUpperCase()}</strong>`;
                 gameMessage.className = 'game-message lose';
                 disableAllKeys();
                 // Reveal word in red
-                wordDisplay.innerHTML = '';
+                wordDisplay.textContent = '';
                 for (const letter of currentWord) {
                     const box           = document.createElement('div');
                     box.className       = 'letter-box';

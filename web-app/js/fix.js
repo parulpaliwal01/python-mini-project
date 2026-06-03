@@ -5,7 +5,7 @@
   const tmpl = document.getElementById('projectsTemplate');
   if (!tmpl) return;
   const tmplGrid = tmpl.content.querySelector('.projects-grid');
-  if (tmplGrid) grid.innerHTML = tmplGrid.innerHTML;
+  if (tmplGrid) grid.textContent = tmplGrid.textContent;
 })();
 
 // ── 2. Timeline items: reveal on scroll ───────────────────────────────

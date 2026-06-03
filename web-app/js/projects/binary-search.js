@@ -276,7 +276,7 @@ function initBinarySearch() {
 
     function renderBars(arr, low, high, mid, found = -1, eliminated = []) {
         const maxVal = Math.max(...arr);
-        barsDiv.innerHTML = arr.map((val, i) => {
+        barsDiv.textContent = arr.map((val, i) => {
             const heightPct = Math.max(15, (val / maxVal) * 180);
             let cls = 'bin-bar';
             let tag = '';
@@ -357,8 +357,8 @@ function initBinarySearch() {
         arrayInput.value = arr.join(' ');
         targetInput.value = arr[Math.floor(Math.random() * arr.length)];
         renderBars(arr, 0, arr.length - 1, -1);
-        stepsLog.innerHTML = '';
-        resultDiv.innerHTML = '';
+        stepsLog.textContent = '';
+        resultDiv.textContent = '';
         rangeInfo.textContent = '';
     });
 
@@ -369,7 +369,7 @@ function initBinarySearch() {
         const rawTarget = targetInput.value.trim();
 
         if (!rawArr || !rawTarget) {
-            resultDiv.innerHTML = `<p style="color:var(--danger-color)">⚠️ Please enter array and target!</p>`;
+            resultDiv.textContent = `<p style="color:var(--danger-color)">⚠️ Please enter array and target!</p>`;
             return;
         }
 
@@ -377,26 +377,26 @@ function initBinarySearch() {
         const target = Number(rawTarget);
 
         if (arr.some(isNaN) || isNaN(target)) {
-            resultDiv.innerHTML = `<p style="color:var(--danger-color)">⚠️ Please enter valid integers only!</p>`;
+            resultDiv.textContent = `<p style="color:var(--danger-color)">⚠️ Please enter valid integers only!</p>`;
             return;
         }
 
         if (JSON.stringify(arr) !== JSON.stringify([...arr].sort((a, b) => a - b))) {
-            resultDiv.innerHTML = `<p style="color:var(--danger-color)">⚠️ Array must be sorted for Binary Search!</p>`;
+            resultDiv.textContent = `<p style="color:var(--danger-color)">⚠️ Array must be sorted for Binary Search!</p>`;
             return;
         }
 
         isSearching = true;
         searchBtn.disabled = true;
-        stepsLog.innerHTML = '';
-        resultDiv.innerHTML = `<p style="color:var(--text-secondary)">⏳ Searching...</p>`;
+        stepsLog.textContent = '';
+        resultDiv.textContent = `<p style="color:var(--text-secondary)">⏳ Searching...</p>`;
         rangeInfo.textContent = '';
 
         renderBars(arr, 0, arr.length - 1, -1);
         const foundIdx = await binarySearchVisualize(arr, target);
 
         if (foundIdx !== -1) {
-            resultDiv.innerHTML = `
+            resultDiv.textContent = `
                 <p style="color:var(--success-color)">✅ Found! <strong>${target}</strong> is at index <strong>${foundIdx}</strong> (position ${foundIdx + 1})</p>
                 <div class="legend">
                     <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Mid element</div>
@@ -405,7 +405,7 @@ function initBinarySearch() {
                 </div>
             `;
         } else {
-            resultDiv.innerHTML = `
+            resultDiv.textContent = `
                 <p style="color:var(--danger-color)">❌ Not Found! <strong>${target}</strong> is not in the array.</p>
             `;
         }

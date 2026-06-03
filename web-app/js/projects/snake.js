@@ -252,7 +252,7 @@ function updateBestScoreUI() {
     const bestScore = localStorage.getItem('snakeBestScore') || 0;
     const bestScoreElement = document.getElementById('best-score');
     if (bestScoreElement) {
-        bestScoreElement.innerHTML = bestScore;
+        bestScoreElement.textContent = bestScore;
     }
 }
 
@@ -267,7 +267,7 @@ function checkAndSaveHighScore() {
 function gameEngine() {
     if (isCollide(snakeArr)) {
         direction = { x: 0, y: 0 };
-        document.getElementById('final-score').innerHTML = score;
+        document.getElementById('final-score').textContent = score;
         document.getElementById("game-over-overlay").classList.remove("hidden");
         if (window.AudioManager) AudioManager.play("snake_die");
         
@@ -290,7 +290,7 @@ function gameEngine() {
     // Eating food
     if (snakeArr[0].y === food.y && snakeArr[0].x === food.x) {
         score += (1 * scoreMultiplier); 
-        document.getElementById('score').innerHTML = score;
+        document.getElementById('score').textContent = score;
         snakeArr.unshift({ x: snakeArr[0].x + direction.x, y: snakeArr[0].y + direction.y });
         if (window.AudioManager) AudioManager.play("snake_eat");
         let a = 2, b = 16;
@@ -351,7 +351,7 @@ function restartGame() {
     const pauseBtn = document.getElementById('pauseGameBtn');
     if (pauseBtn) pauseBtn.textContent = 'Pause';
     const scoreEl = document.getElementById('score');
-    if (scoreEl) scoreEl.innerHTML = score;
+    if (scoreEl) scoreEl.textContent = score;
 
     // Place food randomly inside playfield bounds
     food = {

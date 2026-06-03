@@ -157,7 +157,7 @@ function getTypingSpeedTesterHTML() {
             .typing-tester .sentence-card span {
                 transition: color 0.2s ease;
             }
-        sentenceElement.innerHTML =
+        sentenceElement.textContent =
             currentSentence
                 .split("")
                 .map(function (char) {
@@ -170,7 +170,7 @@ function getTypingSpeedTesterHTML() {
         inputElement.removeAttribute("aria-disabled");
         inputElement.focus({ preventScroll: true });
 
-        result.innerHTML = "";
+        result.textContent = "";
         startTime = Date.now();
     }
 
@@ -544,7 +544,7 @@ function initTypingSpeedTester() {
   // ✅ PASTE THIS IN ITS PLACE:
   async function generateSentence({ startSession = false } = {}) {
     // 1. Show loading state
-    sentenceElement.innerHTML = `<span class="pending">Fetching fresh quote...</span>`;
+    sentenceElement.textContent = `<span class="pending">Fetching fresh quote...</span>`;
     inputElement.disabled = true;
 
     // 2. Fetch the quote dynamically
@@ -613,7 +613,7 @@ function initTypingSpeedTester() {
   }
 
   function renderSentence(sentence) {
-    sentenceElement.innerHTML = sentence
+    sentenceElement.textContent = sentence
       .split("")
       .map((char) => `<span class="pending">${char}</span>`)
       .join("");
@@ -663,11 +663,11 @@ function initTypingSpeedTester() {
     if (headerMistakes) headerMistakes.textContent = finalIncorrect;
 
     // Remove default margins or native headings completely
-    resultMessage.innerHTML = hasTimedOut
+    resultMessage.textContent = hasTimedOut
       ? "⏱️ Time is up!"
       : "🎉 Test completed!";
 
-    resultDetails.innerHTML = `
+    resultDetails.textContent = `
     <div style="display: flex; flex-direction: column; gap: 0.4rem; padding-top: 0.2rem;">
         <div><strong>🚀 Final WPM:</strong> ${finalWpm}</div>
         <div><strong>🎯 Accuracy:</strong> ${finalAccuracy}%</div>
@@ -700,7 +700,7 @@ function initTypingSpeedTester() {
 
   async function generateSentence({ startSession = false } = {}) {
     // Show a loading state
-    sentenceElement.innerHTML = `<span class="pending">Fetching fresh quote...</span>`;
+    sentenceElement.textContent = `<span class="pending">Fetching fresh quote...</span>`;
     inputElement.disabled = true;
 
     // Fetch the dynamic quote using your new API function
@@ -881,7 +881,7 @@ function initTypingSpeedTester() {
     if (headerAccuracy) headerAccuracy.textContent = `${accuracy}%`;
     if (headerMistakes) headerMistakes.textContent = liveIncorrect;
 
-    result.innerHTML = `\n            ⏱️ Time: ${currentTime.toFixed(1)} sec<br>\n            🚀 Speed: ${wpm} WPM<br>\n            🎯 Accuracy: ${accuracy}%<br>\n            ✅ Correct: ${liveCorrect}<br>\n            ❌ Incorrect: ${liveIncorrect}`;
+    result.textContent = `\n            ⏱️ Time: ${currentTime.toFixed(1)} sec<br>\n            🚀 Speed: ${wpm} WPM<br>\n            🎯 Accuracy: ${accuracy}%<br>\n            ✅ Correct: ${liveCorrect}<br>\n            ❌ Incorrect: ${liveIncorrect}`;
 
     if (typedText.length >= currentSentence.length) {
       totalCorrectChars += currentStats.correct;

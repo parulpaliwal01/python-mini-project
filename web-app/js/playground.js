@@ -528,7 +528,7 @@
     }
 
     function resetConsole() {
-        consoleEl.innerHTML =
+        consoleEl.textContent =
             '<span class="pg-placeholder">' +
             '&gt;&gt;&gt; Console output will appear here\u2026' +
             '</span>';

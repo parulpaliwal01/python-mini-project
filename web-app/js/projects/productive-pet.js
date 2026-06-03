@@ -74,7 +74,7 @@ function initProductivePet() {
             if (!task) return alert("Please enter a task!");
 
             const li = document.createElement("li");
-            li.innerHTML = `
+            li.textContent = `
                 <span>${task}</span>
                 <button class="complete-btn">Complete</button>
             `;

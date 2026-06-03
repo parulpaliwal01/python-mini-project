@@ -123,7 +123,7 @@ function initPasswordForge() {
         const hasUpper = /[A-Z]/.test(password);
         const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(password);
 
-        // FIX 3: Removed the conflicting rulesContainer.innerHTML update —
+        // FIX 3: Removed the conflicting rulesContainer.textContent update —
         //         only the individual rule elements are updated to avoid
         //         overwriting the DOM and breaking the ID references
         ruleLength.textContent = hasLength ? '✅ Must contain at least 8 characters' : '❌ Must contain at least 8 characters';

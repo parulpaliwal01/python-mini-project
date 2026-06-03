@@ -698,12 +698,12 @@ function initColorPalette() {
         if (!palette) return;
 
         const swatchContainer = document.getElementById('cpSwatches');
-        swatchContainer.innerHTML = '';
+        swatchContainer.textContent = '';
 
         palette.colors.forEach(color => {
             const swatch = document.createElement('div');
             swatch.className = 'cp-swatch';
-            swatch.innerHTML = `
+            swatch.textContent = `
                 <div class="cp-swatch-color" style="background:${color.hex};"></div>
                 <div class="cp-swatch-info">
                     <span class="cp-swatch-name">${color.name}</span>

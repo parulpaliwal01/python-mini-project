@@ -591,7 +591,7 @@ function initTicTacToe() {
   function buildBoard() {
     const boardEl = document.getElementById("board");
     if (!boardEl) return;
-    boardEl.innerHTML = "";
+    boardEl.textContent = "";
     for (let i = 0; i < 9; i++) {
       const btn = document.createElement("button");
       btn.className = "cell";

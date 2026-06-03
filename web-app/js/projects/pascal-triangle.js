@@ -389,7 +389,7 @@ function initPascalTriangle() {
         const legendContainer = document.getElementById('pascalLegend');
         if (!legendContainer) return;
         
-        legendContainer.innerHTML = (legends[mode] || []).map(([c, l]) =>
+        legendContainer.textContent = (legends[mode] || []).map(([c, l]) =>
             `<span style="display:flex;align-items:center;gap:6px;font-size:0.8rem;">
               <span style="width:12px;height:12px;border-radius:3px;background:${c};display:inline-block;flex-shrink:0;border:1px solid rgba(255,255,255,0.1)"></span>${l}
             </span>`
@@ -474,7 +474,7 @@ function initPascalTriangle() {
             lastValidRows = rows;
         }
 
-        display.innerHTML = '';
+        display.textContent = '';
         const triangle = [];
         
         // Calculate hexagon sizing dynamically. Capped for small rows, scaling down for high rows.
@@ -527,14 +527,14 @@ function initPascalTriangle() {
                     }
                     const cellFontSize = Math.max(8, Math.floor(hexSize * fontSizePercent));
                     
-                    hexagon.innerHTML = `
+                    hexagon.textContent = `
                         <div class="hexagon-inner" style="--hex-color:${color}; font-size:${cellFontSize}px" title="Value: ${numStr}">
                             ${numStr}
                         </div>
                     `;
                 } else {
                     // Render colored tiles only, exact values visible on native hover tooltips
-                    hexagon.innerHTML = `
+                    hexagon.textContent = `
                         <div class="hexagon-inner" style="--hex-color:${color};" title="Value: ${numStr}"></div>
                     `;
                 }

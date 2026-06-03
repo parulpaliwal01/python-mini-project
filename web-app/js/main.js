@@ -25,7 +25,7 @@ function syncThemeColor(theme) {
 function escapeHtml(str) {
   var d = document.createElement('div');
   d.textContent = str;
-  return d.innerHTML;
+  return d.textContent;
 }
 
 function setMainInert(isInert) {
@@ -59,7 +59,7 @@ function showInfoModal(title, steps) {
     if (!overlay || !titleEl || !listEl) return;
     
     titleEl.textContent = title;
-    listEl.innerHTML = steps.map(function(step) {
+    listEl.textContent = steps.map(function(step) {
         return '<li>' + step + '</li>';
     }).join('');
     
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function () {
     syncThemeColor(savedTheme);
     // Prefer showing a sun icon when the site is dark (site's main theme).
     // Show sun for dark theme, moon for light theme so reload displays sun by default.
-    themeToggle.innerHTML = savedTheme === 'dark'
+    themeToggle.textContent = savedTheme === 'dark'
       ? '<i class="fas fa-sun"></i>'
       : '<i class="fas fa-moon"></i>';
     updateThemeToggleAria(savedTheme === 'light');
@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function () {
       localStorage.setItem('theme', next);
       syncThemeColor(next);
       // After toggling, show sun when the new theme is dark, moon when it's light.
-      themeToggle.innerHTML = next === 'dark'
+      themeToggle.textContent = next === 'dark'
         ? '<i class="fas fa-sun"></i>'
         : '<i class="fas fa-moon"></i>';
       updateThemeToggleAria(next === 'light');
@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function () {
   /* ── Sound Toggle ─────────────────────────────────────────── */
   if (soundToggle && window.audioController) {
     function updateSoundIcon() {
-      soundToggle.innerHTML = window.audioController.isMuted
+      soundToggle.textContent = window.audioController.isMuted
         ? '<i class="fas fa-volume-mute"></i>'
         : '<i class="fas fa-volume-up"></i>';
     }
@@ -658,7 +658,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (recentSearchesList) {
-      recentSearchesList.innerHTML = '';
+      recentSearchesList.textContent = '';
       recentSearches.slice(0, 5).forEach(function (search) {
         var item = document.createElement('div');
         item.className = 'dropdown-recent-item';
@@ -678,7 +678,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var removeBtn = document.createElement('button');
         removeBtn.className = 'dropdown-recent-remove';
         removeBtn.setAttribute('aria-label', 'Remove search');
-        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        removeBtn.textContent = '<i class="fas fa-times"></i>';
 
         item.append(text, removeBtn);
 
@@ -722,7 +722,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (noResultsMessage) noResultsMessage.style.display = 'none';
 
     if (resultsList) {
-      resultsList.innerHTML = '';
+      resultsList.textContent = '';
       matches.slice(0, 8).forEach(function (project, index) {
         var item = document.createElement('div');
         item.className = 'dropdown-item' + (index === selectedSuggestionIndex ? ' selected' : '');
@@ -917,9 +917,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     safeRun(function () {
       if (typeof getProjectHTML === 'function') {
-        modalBody.innerHTML = getProjectHTML(name) || '<div style="padding:1rem;color:var(--text-secondary)">Project content unavailable.</div>';
+        modalBody.textContent = getProjectHTML(name) || '<div style="padding:1rem;color:var(--text-secondary)">Project content unavailable.</div>';
       } else {
-        modalBody.innerHTML = '<div style="padding:1rem;color:var(--text-secondary)">Project content unavailable.</div>';
+        modalBody.textContent = '<div style="padding:1rem;color:var(--text-secondary)">Project content unavailable.</div>';
       }
       if (typeof initializeProject === 'function') initializeProject(name);
       setupModalInfoButton(name);
@@ -939,7 +939,7 @@ if (projectContent) {
         // Create info button
         var infoBtn = document.createElement('button');
         infoBtn.className = 'inline-info-btn';
-        infoBtn.innerHTML = 'ⓘ';
+        infoBtn.textContent = 'ⓘ';
         infoBtn.setAttribute('aria-label', 'How to use this project');
         
         // Style the button
@@ -985,7 +985,7 @@ if (projectContent) {
     window.setMainInert(false);
     if (removeTrap) { removeTrap(); removeTrap = null; }
     if (modalBody) {
-      modalBody.innerHTML = '';
+      modalBody.textContent = '';
     }
     if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
       lastFocusedElement.focus({ preventScroll: true });
@@ -1017,12 +1017,12 @@ if (projectContent) {
     var favBtn = document.createElement('button');
     favBtn.className = 'btn-favorite';
     favBtn.setAttribute('aria-label', 'Toggle favorite');
-    favBtn.innerHTML = '<i class="far fa-star"></i>';
+    favBtn.textContent = '<i class="far fa-star"></i>';
 
     var favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
     if (favorites.includes(name)) {
       favBtn.classList.add('active');
-      favBtn.innerHTML = '<i class="fas fa-star"></i>';
+      favBtn.textContent = '<i class="fas fa-star"></i>';
     }
 
     favBtn.addEventListener('click', function (e) {
@@ -1032,11 +1032,11 @@ if (projectContent) {
       if (idx === -1) {
         favs.push(name);
         favBtn.classList.add('active');
-        favBtn.innerHTML = '<i class="fas fa-star"></i>';
+        favBtn.textContent = '<i class="fas fa-star"></i>';
       } else {
         favs.splice(idx, 1);
         favBtn.classList.remove('active');
-        favBtn.innerHTML = '<i class="far fa-star"></i>';
+        favBtn.textContent = '<i class="far fa-star"></i>';
         if (currentCategory === 'favorites') {
           card.style.display = 'none';
         }
@@ -1051,7 +1051,7 @@ if (projectContent) {
     var shareBtn = document.createElement('button');
     shareBtn.className = 'btn-share';
     shareBtn.setAttribute('aria-label', 'Share ' + name);
-    shareBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
+    shareBtn.textContent = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
     shareBtn.title = 'Copy shareable link';
 
     shareBtn.addEventListener('click', function (e) {

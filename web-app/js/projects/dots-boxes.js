@@ -525,13 +525,13 @@ function initDotsBoxes() {
 
     startPVP.addEventListener('click', () => {
         gameMode = 'pvp';
-        player2Title.innerHTML = 'Player 2';
+        player2Title.textContent = 'Player 2';
         resetGame();
     });
 
     startCPU.addEventListener('click', () => {
         gameMode = 'cpu';
-        player2Title.innerHTML = '🤖 AI';
+        player2Title.textContent = '🤖 AI';
         resetGame();
     });
 
@@ -551,7 +551,7 @@ function initDotsBoxes() {
     }
 
     function createBoard() {
-        board.innerHTML = '';
+        board.textContent = '';
         board.style.gridTemplateColumns = `repeat(${size * 2 - 1}, auto)`;
 
         for (let row = 0; row < size * 2 - 1; row++) {
@@ -627,9 +627,9 @@ function initDotsBoxes() {
 
     function updateTurnText() {
         if (currentPlayer === 1) {
-            turnIndicator.innerHTML = '🔵 Player 1 Turn';
+            turnIndicator.textContent = '🔵 Player 1 Turn';
         } else {
-            turnIndicator.innerHTML = gameMode === 'cpu' ? '🤖 AI Turn' : '🔴 Player 2 Turn';
+            turnIndicator.textContent = gameMode === 'cpu' ? '🤖 AI Turn' : '🔴 Player 2 Turn';
         }
     }
 
@@ -661,10 +661,10 @@ function initDotsBoxes() {
                     const boxEl = document.getElementById(`box-${row}-${col}`);
                     if (currentPlayer === 1) {
                         boxEl.style.background = p1Color + '55';
-                        boxEl.innerHTML        = '🔵';
+                        boxEl.textContent        = '🔵';
                     } else {
                         boxEl.style.background = p2Color + '55';
-                        boxEl.innerHTML        = gameMode === 'cpu' ? '🤖' : '🔴';
+                        boxEl.textContent        = gameMode === 'cpu' ? '🤖' : '🔴';
                     }
                 }
             }
@@ -778,7 +778,7 @@ function initDotsBoxes() {
         }
 
         // Set game status to "Game Over" to avoid background text overlap clutter
-        turnIndicator.innerHTML = '🏆 Game Over';
+        turnIndicator.textContent = '🏆 Game Over';
 
         // Trigger confetti for any human victory, or general winner (not tie)
         if (winner > 0) {
@@ -789,7 +789,7 @@ function initDotsBoxes() {
 
         const overlay = document.createElement('div');
         overlay.className = 'winner-overlay';
-        overlay.innerHTML = `
+        overlay.textContent = `
             <div class="winner-popup" role="dialog" aria-modal="true" aria-label="Game over">
                 <h2>${title}</h2>
                 <div class="winner-subtitle">${subtitle}</div>
@@ -832,9 +832,9 @@ function initDotsBoxes() {
         viewBoardBtn.addEventListener('click', () => {
             overlay.classList.toggle('minimized');
             if (overlay.classList.contains('minimized')) {
-                viewBoardBtn.innerHTML = '📊 Show Stats';
+                viewBoardBtn.textContent = '📊 Show Stats';
             } else {
-                viewBoardBtn.innerHTML = '🔍 View Board';
+                viewBoardBtn.textContent = '🔍 View Board';
             }
         });
     }

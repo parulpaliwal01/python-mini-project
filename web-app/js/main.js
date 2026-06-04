@@ -100,6 +100,42 @@ function showInfoModal(title, steps) {
   overlay.addEventListener("click", overlayClick);
 }
 
+// Themed confirmation modal (in-page) helper
+function showConfirm(message, onConfirm, onCancel) {
+  var overlay = document.getElementById('confirmModalOverlay');
+  var msg = document.getElementById('confirmModalMessage');
+  var okBtn = document.getElementById('confirmOkBtn');
+  var cancelBtn = document.getElementById('confirmCancelBtn');
+  if (!overlay || !msg || !okBtn || !cancelBtn) {
+    // fallback to window.confirm
+    var ok = window.confirm(message);
+    if (ok && typeof onConfirm === 'function') onConfirm();
+    else if (!ok && typeof onCancel === 'function') onCancel();
+    return;
+  }
+
+  msg.textContent = message;
+  overlay.classList.add('active');
+
+  function cleanup() {
+    overlay.classList.remove('active');
+    okBtn.removeEventListener('click', okHandler);
+    cancelBtn.removeEventListener('click', cancelHandler);
+    overlay.removeEventListener('click', overlayClick);
+    document.removeEventListener('keydown', keyHandler);
+  }
+
+  function okHandler(e) { e.stopPropagation(); cleanup(); if (typeof onConfirm === 'function') onConfirm(); }
+  function cancelHandler(e) { e.stopPropagation(); cleanup(); if (typeof onCancel === 'function') onCancel(); }
+  function overlayClick(e) { if (e.target === overlay) { cancelHandler(e); } }
+  function keyHandler(e) { if (e.key === 'Escape') cancelHandler(e); }
+
+  okBtn.addEventListener('click', okHandler);
+  cancelBtn.addEventListener('click', cancelHandler);
+  overlay.addEventListener('click', overlayClick);
+  document.addEventListener('keydown', keyHandler);
+}
+
 var currentProjectName = "";
 
 function setupModalInfoButton(projectName) {
@@ -743,7 +779,7 @@ document.addEventListener("DOMContentLoaded", function () {
         label.addEventListener("click", function () {
           syncSearchInputs(search, searchInput);
           currentSearchQuery = search;
-          performSearch();
+          performSearch(true);
           closeDropdown();
         });
 
@@ -759,9 +795,27 @@ document.addEventListener("DOMContentLoaded", function () {
           renderRecentSearches();
         });
 
-        recentSearchesList.appendChild(item);
-      });
-    }
+          recentSearchesList.appendChild(item);
+        });
+
+        // Wire up header Clear All button (if present)
+        var headerClearBtn = document.getElementById('clearRecentBtn');
+        if (headerClearBtn) {
+          headerClearBtn.style.display = recentSearches.length ? 'inline-flex' : 'none';
+          headerClearBtn.onclick = function (e) {
+            e.stopPropagation();
+            if (!recentSearches || recentSearches.length === 0) return;
+            showConfirm('Clear all recent searches? This cannot be undone.', function () {
+              recentSearches = [];
+              localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
+              renderRecentSearches();
+              closeDropdown();
+            }, function () {
+              // cancelled
+            });
+          };
+        }
+      }
 
     recentSearchesSection.style.display = "block";
     if (resultsSection) resultsSection.style.display = "none";
@@ -843,7 +897,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!searchInput) return;
     searchInput.value = title;
     currentSearchQuery = title.toLowerCase();
-    performSearch();
+    performSearch(true);
     closeDropdown();
     if (projectsSection) {
       projectsSection.scrollIntoView({
@@ -853,7 +907,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  function performSearch() {
+  function performSearch(commit) {
+    if (commit === undefined) commit = true;
     var query = currentSearchQuery;
     if (!query) {
       applyCategoryFilter(currentCategory);
@@ -869,12 +924,14 @@ document.addEventListener("DOMContentLoaded", function () {
       syncStickyTabs("all");
     }
 
-    recentSearches = recentSearches.filter(function (s) {
-      return s !== query;
-    });
-    recentSearches.unshift(query);
-    recentSearches = recentSearches.slice(0, 10);
-    localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
+    if (commit) {
+      recentSearches = recentSearches.filter(function (s) {
+        return s !== query;
+      });
+      recentSearches.unshift(query);
+      recentSearches = recentSearches.slice(0, 10);
+      localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
+    }
 
     var visibleCount = 0;
     var favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
@@ -928,7 +985,7 @@ document.addEventListener("DOMContentLoaded", function () {
         currentSearchQuery = query;
         if (searchLoader) searchLoader.style.display = query ? "block" : "none";
         debouncedSearch(query);
-        performSearch();
+        performSearch(false);
       });
 
       input.addEventListener("focus", function () {
@@ -938,10 +995,21 @@ document.addEventListener("DOMContentLoaded", function () {
           renderRecentSearches();
       });
 
+      input.addEventListener("blur", function () {
+        if (currentSearchQuery && currentSearchQuery.trim()) {
+          performSearch(true);
+        }
+      });
+
       input.addEventListener("keydown", function (e) {
         if (e.key === "Escape") {
           closeDropdown();
           input.blur();
+        }
+        if (e.key === "Enter") {
+          e.preventDefault();
+          performSearch(true);
+          closeDropdown();
         }
       });
     });

@@ -7,7 +7,7 @@ matplotlib==3.10.9
 pillow==12.2.0
 
 # Test dependencies
-pytest>=9.0.3
+pytest>=8.0.0
 
 # Utilities dependencies
 nltk==3.9.4

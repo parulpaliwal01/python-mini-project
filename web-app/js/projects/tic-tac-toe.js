@@ -751,11 +751,11 @@ function initTicTacToe() {
       if (win.sym === "X") scores.p1++; else scores.p2++;
       syncScoreboard();
       const winner = win.sym === "X" ? p1 : p2;
-      showResult(`${winner} wins this round!`);
+      showResult("🏆", `${winner} wins this round!`);
     } else {
       scores.draws++;
       syncScoreboard();
-      showResult( "It's a draw!");
+      showResult("🤝", "It's a draw!");
     }
   }
  

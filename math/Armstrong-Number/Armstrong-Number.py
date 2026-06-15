@@ -1,54 +1,69 @@
-print("🔢 Armstrong Number Checker 🔢")
-print("An Armstrong number equals the sum of its digits raised to the power of number of digits")
-print("Example: 153 = 1³ + 5³ + 3³ = 1 + 125 + 27 = 153\n")
+import sys
+import os
 
-while True:
-    try:
-        num = int(input("➡️  Enter a number to check: "))
-        break
-    except ValueError:
-        print("⚠️ Oops! That doesn't look like a valid number. Please try again.\n")
-
-if num < 0:
-    print("❌ Please enter a positive number!")
+# Add project root to sys.path
+if "__file__" in globals():
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 else:
-    original_num = num
-    num_digits = len(str(num)) if num > 0 else 1
-    total = 0
-    temp = num
+    sys.path.append(os.path.abspath(os.getcwd()))
+from utils.validation import get_int
 
-    while temp > 0:
-        digit = temp % 10
-        total += digit ** num_digits
-        temp //= 10
+def is_armstrong_number(n: int) -> bool:
+    """Check if a number is an Armstrong number."""
+    if n < 0:
+        return False
+    num_str = str(n)
+    num_digits = len(num_str)
+    total = sum(int(char) ** num_digits for char in num_str)
+    return total == n
 
-    print(f"\n📊 Number: {original_num}")
-    print(f"📐 Number of digits: {num_digits}")
+def main() -> None:
+    """Run the Armstrong number checker CLI."""
+    print("=" * 50)
+    print("🔢 ARMSTRONG NUMBER CHECKER 🔢")
+    print("=" * 50)
+    print("An Armstrong number equals the sum of its digits raised to the power of number of digits.")
+    print("Example: 153 = 1³ + 5³ + 3³ = 1 + 125 + 27 = 153\n")
 
-    print(f"\n🔍 Calculation:")
-    temp = original_num
-    digits = []
-    while temp > 0:
-        digits.append(temp % 10)
-        temp //= 10
-    digits.reverse()
+    while True:
+        print("=" * 50)
+        num = get_int(
+            prompt="➡️  Enter a positive number to check: ",
+            error_invalid="Oops! That doesn't look like a valid integer. Please try again.\n"
+        )
+        if num < 0:
+            print("❌ Please enter a positive number!")
+            continue
+            
+        num_str = str(num)
+        num_digits = len(num_str)
+        total = sum(int(char) ** num_digits for char in num_str)
+            
+        print(f"\n📊 Number: {num}")
+        print(f"📐 Number of digits: {num_digits}")
+        print(f"\n🔍 Calculation:")
+        
+        calculation_parts = [f"{char}^{num_digits}" for char in num_str]
+        print(f"   {' + '.join(calculation_parts)}")
+        
+        values = [f"{int(char)**num_digits}" for char in num_str]
+        print(f"   = {' + '.join(values)}")
+        print(f"   = {total}")
+        
+        if is_armstrong_number(num):
+            print(f"\n✅ {num} is an Armstrong Number! 🎉")
+        else:
+            print(f"\n❌ {num} is NOT an Armstrong Number.")
+            
+        print("\n💡 Some Armstrong Numbers:")
+        print("   1-digit: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9")
+        print("   3-digit: 153, 370, 371, 407")
+        print("   4-digit: 1634, 8208, 9474")
 
-    if num == 0:
-        digits = [0]
+        again = input("\n🔄 Do you want to check another number? (y/n): ").strip().lower()
+        if again != 'y':
+            print("\n👋 Thanks for using Armstrong Number Checker! Goodbye!\n")
+            break
 
-    calculation_parts = [f"{d}^{num_digits}" for d in digits]
-    print(f"   {' + '.join(calculation_parts)}")
-
-    values = [f"{d**num_digits}" for d in digits]
-    print(f"   = {' + '.join(values)}")
-    print(f"   = {total}")
-
-    if total == original_num or num == 0:
-        print(f"\n✅ {original_num} is an Armstrong Number! 🎉")
-    else:
-        print(f"\n❌ {original_num} is NOT an Armstrong Number.")
-
-    print("\n💡 Some Armstrong Numbers:")
-    print("   1-digit: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9")
-    print("   3-digit: 153, 370, 371, 407")
-    print("   4-digit: 1634, 8208, 9474")
+if __name__ == "__main__":
+    main()

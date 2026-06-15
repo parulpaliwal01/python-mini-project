@@ -202,7 +202,7 @@ function initMorseCode() {
             textInput.placeholder = 'Type your message here...';
             textInput.value = '';
             morseOutput.innerHTML = '<p class="placeholder">Your translation will appear here...</p>';
-            translateBtn.innerHTML = '📻 Translate to Morse';
+            translateBtn.textContent = '📻 Translate to Morse';
         }
     });
 
@@ -212,7 +212,7 @@ function initMorseCode() {
             textInput.placeholder = "Type morse code (separate letters with space, words with double spaces)...";
             textInput.value = '';
             morseOutput.innerHTML = '<p class="placeholder">Your translation will appear here...</p>';
-            translateBtn.innerHTML = '📝 Translate to Text';
+            translateBtn.textContent = '📝 Translate to Text';
         }
     });
     

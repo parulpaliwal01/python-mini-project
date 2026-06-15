@@ -85,6 +85,7 @@ function getCoordinatePolarTransformHTML() {
                 outline:none;
                 background-color:var(--bg-color);
                 border:1px solid white;
+                color: var(--text-color);
             }
             #cartesianY{
                 padding:15px;
@@ -92,10 +93,28 @@ function getCoordinatePolarTransformHTML() {
                 outline:none;
                 background-color:var(--bg-color);
                 border:1px solid white;
+                color: var(--text-color);
             }
-            .btn-primary{
-                padding:15px;
-                border-radius:30px;
+            .btn-primary {
+                background: var(--primary-color);
+                color: white;
+                border: none;
+                padding: 12px 28px;
+                border-radius: 30px;
+                cursor: pointer;
+                font-weight: 600;
+                font-size: 1rem;
+                transition: all 0.2s ease;
+            }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+                filter: brightness(1.05);
+            }
+
+            .btn-primary:active {
+                transform: translateY(0);
             }
         </style>
     `;

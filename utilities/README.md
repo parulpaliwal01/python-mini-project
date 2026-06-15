@@ -4,14 +4,15 @@ This folder contains practical Python mini-tools and utility-based projects such
 
 ## Projects in `utilities/`
 
-- AI RESUME ANALYZER (NLP VERSION)
-- FakeNewsHeadlineGenerator
+- AI-Resume-Analyzer
+- Caesar-Cipher
+- Fake-News-Headline-Generator
 - Number-System-Converter
 - Productivity-Pet
 - Text-to-Morse
 - Tower-of-Hanoi
 - Typing-Speed-Tester
-- f1-performance-analyzer
+- F1-Performance-Analyzer
 
 ## How to Set Up and Run Any Utility Project
 

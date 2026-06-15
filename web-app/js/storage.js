@@ -28,4 +28,7 @@ if (typeof window !== 'undefined') {
     window.appStorage = storageHelpers;
 }
 
-export { saveToStorage, loadFromStorage, removeFromStorage };
+// Support ES6 module export if needed
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { saveToStorage, loadFromStorage, removeFromStorage };
+}

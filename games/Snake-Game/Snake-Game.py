@@ -2,416 +2,308 @@ import turtle
 import random
 import time
 
-# ================= SCREEN SETUP =================
+# ================= SOUND SYSTEM =================
+def main():
+    global BORDER_LIMIT, GRID_RANGE, GRID_SIZE, _, border, current_food, eat_sound, food, food_types, game_state, game_text, gameover_sound, head, high_score, i, level, new_part, occupied, p, parts, pygame_installed, score, score_text, screen, speed, text, title_text, x, y
+    pygame_installed = False
+    eat_sound = None
+    gameover_sound = None
 
-screen = turtle.Screen()
-screen.title("Advanced Snake Game")
-screen.bgcolor("#0A0A0A")
-screen.setup(width=0.8, height=0.9)
-screen.tracer(0)
-
-# ================= BORDER =================
-
-border = turtle.Turtle()
-border.hideturtle()
-border.speed(0)
-border.color("#00FFAA")
-border.pensize(4)
-border.penup()
-border.goto(-300, 300)
-border.pendown()
-
-for _ in range(4):
-    border.forward(600)
-    border.right(90)
-
-# ================= TITLE =================
-
-title_text = turtle.Turtle()
-title_text.hideturtle()
-title_text.color("#00FFAA")
-title_text.penup()
-title_text.goto(0, 330)
-
-title_text.write(
-    "SNAKE GAME",
-    align="center",
-    font=("Arial", 28, "bold")
-)
-
-# ================= INSTRUCTIONS =================
-
-instruction = turtle.Turtle()
-instruction.hideturtle()
-instruction.color("white")
-instruction.penup()
-instruction.goto(0, -340)
-
-instruction.write(
-    "Use Arrow Keys To Move",
-    align="center",
-    font=("Arial", 14, "normal")
-)
-
-# ================= GAME CONSTANTS =================
-
-GRID_SIZE = 15
-GRID_RANGE = 18 # Number of steps from center to border
-BORDER_LIMIT = 280
-
-# ================= SNAKE HEAD =================
-
-head = turtle.Turtle()
-head.shape("circle")
-head.color("#00FF66")
-head.shapesize(1.3, 1.3)
-head.penup()
-head.goto(0, 0)
-head.direction = "stop"
-
-# ================= EYES =================
-
-left_eye = turtle.Turtle()
-left_eye.shape("circle")
-left_eye.color("black")
-left_eye.shapesize(0.25, 0.25)
-left_eye.penup()
-
-right_eye = turtle.Turtle()
-right_eye.shape("circle")
-right_eye.color("black")
-right_eye.shapesize(0.25, 0.25)
-right_eye.penup()
-
-# ================= FOOD =================
-
-food = turtle.Turtle()
-food.penup()
-
-food_types = [
-    {"shape": "circle", "color": "#FF4444", "size": 1.2, "points": 1},
-    {"shape": "square", "color": "#FFD700", "size": 1.3, "points": 2},
-    {"shape": "triangle", "color": "#00BFFF", "size": 1.4, "points": 3},
-]
-
-current_food = None
-
-# ================= BODY PARTS =================
-
-parts = []
-
-green_shades = [
-    "#66FF99",
-    "#55EE88",
-    "#44DD77",
-    "#33CC66",
-    "#22BB55"
-]
-
-# ================= SCORE =================
-
-score = 0
-high_score = 0
-
-score_text = turtle.Turtle()
-score_text.hideturtle()
-score_text.speed(0)
-score_text.color("white")
-score_text.penup()
-score_text.goto(0, 295)
-
-# ================= GAME OVER TEXT =================
-
-game_text = turtle.Turtle()
-game_text.hideturtle()
-game_text.color("red")
-game_text.penup()
-game_text.goto(0, 0)
-
-# ================= EFFECT TEXT =================
-
-effect_text = turtle.Turtle()
-effect_text.hideturtle()
-effect_text.color("#FFD700")
-effect_text.penup()
-
-# ================= UPDATE SCORE =================
-
-def update_score():
-
-    score_text.clear()
-
-    score_text.write(
-        f"SCORE: {score}    HIGH SCORE: {high_score}",
-        align="center",
-        font=("Courier New", 18, "bold")
-    )
-
-update_score()
-
-# ================= GENERATE FOOD =================
-
-def generate_food():
-
-    global current_food
-
-    current_food = random.choice(food_types)
-
-    food.shape(current_food["shape"])
-    food.color(current_food["color"])
-    food.shapesize(current_food["size"])
-
-    max_attempts = 100
-    attempt = 0
+    try:
+        import pygame
+        pygame.mixer.init()
     
-    while attempt < max_attempts:
-        x = random.randint(-GRID_RANGE, GRID_RANGE) * GRID_SIZE
-        y = random.randint(-GRID_RANGE, GRID_RANGE) * GRID_SIZE
-        
-        # Check if the coordinate is occupied by the snake's head
-        if head.distance(x, y) < GRID_SIZE:
-            attempt += 1
-            continue
-            
-        # Check if the coordinate is occupied by any body part
-        occupied = False
-        for part in parts:
-            if part.distance(x, y) < GRID_SIZE:
-                occupied = True
-                break
-        
-        if not occupied:
-            food.goto(x, y)
-            return
-        
-        attempt += 1
+        # Try loading default wav files
+        try:
+            eat_sound = pygame.mixer.Sound("sounds/eat.wav")
+            gameover_sound = pygame.mixer.Sound("sounds/gameover.wav")
+            pygame_installed = True
+        except (pygame.error, FileNotFoundError, OSError) as e:
+            # Fallback to alternate mp3 file naming schemes
+            try:
+                eat_sound = pygame.mixer.Sound("sounds/Apple_Eating.mp3")
+                gameover_sound = pygame.mixer.Sound("sounds/Game_over.mp3")
+                pygame_installed = True
+            except (pygame.error, FileNotFoundError, OSError) as e2:
+                print(f"⚠️ Warning: Sound files not found or could not be loaded: {e2}")
+                pygame_installed = False
+    except ImportError:
+        print("⚠️ Warning: pygame module not found. Game will run without sound effects.")
 
-    # Fallback: If no space found after max attempts, game is likely won or grid is full
-    # Reset game or show win message (for now, we'll reset to avoid freeze)
-    reset_game()
 
-generate_food()
+    # ================= SCREEN SETUP =================
 
-# ================= FOOD EFFECT =================
+    screen = turtle.Screen()
+    screen.title("Advanced Snake Game")
+    screen.bgcolor("#0A0A0A")
+    screen.setup(width=0.8, height=0.9)
+    screen.tracer(0)
 
-def food_effect(x, y, points):
+    # ================= BORDER =================
 
-    effect_text.goto(x, y + 20)
+    border = turtle.Turtle()
+    border.hideturtle()
+    border.color("#00FFAA")
+    border.pensize(4)
+    border.penup()
+    border.goto(-300, 300)
+    border.pendown()
 
-    effect_text.clear()
+    for _ in range(4):
+        border.forward(600)
+        border.right(90)
 
-    effect_text.write(
-        f"+{points}",
-        align="center",
-        font=("Arial", 16, "bold")
-    )
+    # ================= TITLE =================
 
-    screen.update()
+    title_text = turtle.Turtle()
+    title_text.hideturtle()
+    title_text.color("#00FFAA")
+    title_text.penup()
+    title_text.goto(0, 330)
+    title_text.write("SNAKE GAME", align="center", font=("Arial", 28, "bold"))
 
-    time.sleep(0.2)
+    # ================= TEXT =================
 
-    effect_text.clear()
+    game_text = turtle.Turtle()
+    game_text.hideturtle()
+    game_text.color("white")
+    game_text.penup()
+    game_text.goto(0, 0)
 
-# ================= CONTROLS =================
+    # ================= GAME CONSTANTS =================
 
-def move_up():
-    if head.direction != "down":
-        head.direction = "up"
+    GRID_SIZE = 15
+    GRID_RANGE = 18
+    BORDER_LIMIT = 280
 
-def move_down():
-    if head.direction != "up":
-        head.direction = "down"
+    # ================= SNAKE =================
 
-def move_left():
-    if head.direction != "right":
-        head.direction = "left"
-
-def move_right():
-    if head.direction != "left":
-        head.direction = "right"
-
-screen.listen()
-
-screen.onkeypress(move_up, "Up")
-screen.onkeypress(move_down, "Down")
-screen.onkeypress(move_left, "Left")
-screen.onkeypress(move_right, "Right")
-
-# ================= MOVE FUNCTION =================
-
-def move():
-
-    if head.direction == "up":
-        head.sety(head.ycor() + GRID_SIZE)
-
-    if head.direction == "down":
-        head.sety(head.ycor() - GRID_SIZE)
-
-    if head.direction == "left":
-        head.setx(head.xcor() - GRID_SIZE)
-
-    if head.direction == "right":
-        head.setx(head.xcor() + GRID_SIZE)
-
-# ================= UPDATE EYES =================
-
-def update_eyes():
-
-    x = head.xcor()
-    y = head.ycor()
-
-    if head.direction == "up":
-        left_eye.goto(x - 5, y + 8)
-        right_eye.goto(x + 5, y + 8)
-
-    elif head.direction == "down":
-        left_eye.goto(x - 5, y - 8)
-        right_eye.goto(x + 5, y - 8)
-
-    elif head.direction == "left":
-        left_eye.goto(x - 8, y + 5)
-        right_eye.goto(x - 8, y - 5)
-
-    elif head.direction == "right":
-        left_eye.goto(x + 8, y + 5)
-        right_eye.goto(x + 8, y - 5)
-
-    else:
-        left_eye.goto(x - 5, y + 8)
-        right_eye.goto(x + 5, y + 8)
-
-# ================= RESET GAME =================
-
-def reset_game():
-
-    global score
-
-    time.sleep(1)
-
-    head.goto(0, 0)
+    head = turtle.Turtle()
+    head.shape("circle")
+    head.color("#00FF66")
+    head.penup()
     head.direction = "stop"
 
-    left_eye.goto(-1000, -1000)
-    right_eye.goto(-1000, -1000)
+    parts = []
 
-    for p in parts:
-        p.goto(1000, 1000)
+    # ================= FOOD =================
 
-    parts.clear()
+    food = turtle.Turtle()
+    food.penup()
 
-    game_text.clear()
+    food_types = [
+        {"shape": "circle", "color": "#FF4444", "size": 1.2, "points": 1},
+        {"shape": "square", "color": "#FFD700", "size": 1.3, "points": 2},
+        {"shape": "triangle", "color": "#00BFFF", "size": 1.4, "points": 3},
+    ]
 
-    game_text.write(
-        "GAME OVER\nPress Any Arrow Key To Restart",
-        align="center",
-        font=("Arial", 24, "bold")
-    )
+    current_food = None
 
-    screen.update()
+    def generate_food():
+        global current_food
 
-    time.sleep(1.5)
+        current_food = random.choice(food_types)
+        food.shape(current_food["shape"])
+        food.color(current_food["color"])
+        food.shapesize(current_food["size"])
 
-    game_text.clear()
+        while True:
+            x = random.randint(-GRID_RANGE, GRID_RANGE) * GRID_SIZE
+            y = random.randint(-GRID_RANGE, GRID_RANGE) * GRID_SIZE
+
+            occupied = False
+
+            if (x, y) == (int(head.xcor()), int(head.ycor())):
+                occupied = True
+
+            for p in parts:
+                if (int(p.xcor()), int(p.ycor())) == (x, y):
+                    occupied = True
+                    break
+
+            if not occupied:
+                food.goto(x, y)
+                return
+
+    generate_food()
+
+    # ================= STATE VARIABLES =================
 
     score = 0
+    high_score = 0
+    level = 1
+    speed = 0.05
+    game_state = "IDLE" 
+
+    score_text = turtle.Turtle()
+    score_text.hideturtle()
+    score_text.color("white")
+    score_text.penup()
+    score_text.goto(0, 295)
+
+    def update_score():
+        score_text.clear()
+        score_text.write(
+            f"SCORE: {score}   LEVEL: {level}   HIGH SCORE: {high_score}",
+            align="center",
+            font=("Courier New", 16, "bold")
+        )
 
     update_score()
 
-# ================= MAIN GAME LOOP =================
+    # ================= CONTROL INFRASTRUCTURE =================
 
-pulse_size = 1.2
-pulse_direction = 0.03
+    def countdown():
+        for text in ["3", "2", "1", "GO!"]:
+            game_text.clear()
+            game_text.write(text, align="center", font=("Arial", 30, "bold"))
+            screen.update()
+            time.sleep(1)
+        game_text.clear()
 
-while True:
+    def handle_spacebar():
+        global game_state, score, level, speed
+    
+        if game_state == "IDLE":
+            countdown()
+            game_state = "PLAYING"
+        
+        elif game_state == "PLAYING":
+            game_state = "PAUSED"
+            game_text.clear()
+            game_text.write("PAUSED", align="center", font=("Arial", 24, "bold"))
+        
+        elif game_state == "PAUSED":
+            game_state = "PLAYING"
+            game_text.clear()
+        
+        elif game_state == "GAME_OVER":
+            head.goto(0, 0)
+            head.direction = "stop"
+            for p in parts:
+                p.goto(1000, 1000)
+            parts.clear()
+        
+            score = 0
+            level = 1
+            speed = 0.05
+        
+            update_score()
+            countdown()
+            game_state = "PLAYING"
 
-    # FOOD ANIMATION
+    screen.listen()
+    screen.onkeypress(handle_spacebar, "space")
 
-    pulse_size += pulse_direction
+    def move_up():
+        if head.direction != "down" and game_state == "PLAYING":
+            head.direction = "up"
 
-    if pulse_size > 1.4:
-        pulse_direction = -0.03
+    def move_down():
+        if head.direction != "up" and game_state == "PLAYING":
+            head.direction = "down"
 
-    if pulse_size < 1.1:
-        pulse_direction = 0.03
+    def move_left():
+        if head.direction != "right" and game_state == "PLAYING":
+            head.direction = "left"
 
-    food.shapesize(pulse_size)
+    def move_right():
+        if head.direction != "left" and game_state == "PLAYING":
+            head.direction = "right"
 
-    food.setheading(food.heading() + 5)
+    screen.onkeypress(move_up, "Up")
+    screen.onkeypress(move_down, "Down")
+    screen.onkeypress(move_left, "Left")
+    screen.onkeypress(move_right, "Right")
 
-    # BORDER COLLISION
+    # ================= MOVE PHYSICS =================
 
-    if (
-        head.xcor() > BORDER_LIMIT or
-        head.xcor() < -BORDER_LIMIT or
-        head.ycor() > BORDER_LIMIT or
-        head.ycor() < -BORDER_LIMIT
-    ):
-        reset_game()
+    def move():
+        if head.direction == "up":
+            head.sety(head.ycor() + GRID_SIZE)
+        elif head.direction == "down":
+            head.sety(head.ycor() - GRID_SIZE)
+        elif head.direction == "left":
+            head.setx(head.xcor() - GRID_SIZE)
+        elif head.direction == "right":
+            head.setx(head.xcor() + GRID_SIZE)
 
-    # FOOD COLLISION
+    # ================= MAIN LOOP =================
 
-    if head.distance(food) < GRID_SIZE:
+    game_text.write("Press SPACEBAR to Start", align="center", font=("Arial", 24, "bold"))
 
-        food_effect(
-            food.xcor(),
-            food.ycor(),
-            current_food["points"]
-        )
+    while True:
+        screen.update()
 
-        generate_food()
+        if game_state in ["IDLE", "PAUSED", "GAME_OVER"]:
+            time.sleep(0.1)
+            continue
 
-        # NEW BODY PART
+        # Border collision
+        if (
+            head.xcor() > BORDER_LIMIT or
+            head.xcor() < -BORDER_LIMIT or
+            head.ycor() > BORDER_LIMIT or
+            head.ycor() < -BORDER_LIMIT
+        ):
+            if pygame_installed and gameover_sound:
+                gameover_sound.play()
+            game_text.write("GAME OVER - Press SPACE to Restart", align="center", font=("Arial", 20, "bold"))
+            game_state = "GAME_OVER"
+            continue
 
-        new_part = turtle.Turtle()
+        # Food collision
+        if head.distance(food) < GRID_SIZE:
+            if pygame_installed and eat_sound:
+                eat_sound.play()
 
-        new_part.shape("circle")
-        new_part.color(random.choice(green_shades))
-        new_part.shapesize(1.0, 1.0)
-        new_part.penup()
+            score += current_food["points"]
 
-        parts.append(new_part)
+            if score > high_score:
+                high_score = score
 
-        # SNAKE COLOR CHANGE
+            if score % 5 == 0:
+                level += 1
+                speed -= 0.005
+                game_text.clear()
+                game_text.write(f"LEVEL {level}", align="center", font=("Arial", 24, "bold"))
+                screen.update()
+                time.sleep(0.5)
+                game_text.clear()
 
-        head.color(random.choice(green_shades))
+            generate_food()
 
-        # SCORE UPDATE
+            new_part = turtle.Turtle()
+            new_part.shape("circle")
+            new_part.color("#66FF99")
+            new_part.penup()
+            parts.append(new_part)
+            update_score()
 
-        score += current_food["points"]
+        # Move body
+        for i in range(len(parts) - 1, 0, -1):
+            x = parts[i - 1].xcor()
+            y = parts[i - 1].ycor()
+            parts[i].goto(x, y)
 
-        if score > high_score:
-            high_score = score
+        if parts:
+            parts[0].goto(head.xcor(), head.ycor())
 
-        update_score()
+        move()
 
-    # MOVE BODY
+        # Self collision
+        for p in parts:
+            if p.distance(head) < 12:
+                if pygame_installed and gameover_sound:
+                    gameover_sound.play()
+                game_text.write("GAME OVER - Press SPACE to Restart", align="center", font=("Arial", 20, "bold"))
+                game_state = "GAME_OVER"
+                break
 
-    for i in range(len(parts) - 1, 0, -1):
+        if game_state == "GAME_OVER":
+            continue
 
-        x = parts[i - 1].xcor()
-        y = parts[i - 1].ycor()
+        time.sleep(speed)
 
-        parts[i].goto(x, y)
-
-    if len(parts) > 0:
-        parts[0].goto(head.xcor(), head.ycor())
-
-    # MOVE HEAD
-
-    move()
-
-    # UPDATE EYES
-
-    update_eyes()
-
-    # SELF COLLISION
-
-    for p in parts:
-
-        if p.distance(head) < 12:
-
-            reset_game()
-
-    screen.update()
-
-    time.sleep(0.05)
+if __name__ == '__main__':
+    main()

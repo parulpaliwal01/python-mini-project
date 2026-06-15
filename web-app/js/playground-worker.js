@@ -20,7 +20,7 @@
 'use strict';
 
 var PYODIDE_VERSION = '0.26.2';
-var PYODIDE_CDN     = 'https://cdn.jsdelivr.net/pyodide/v' + PYODIDE_VERSION + '/full/';
+var PYODIDE_CDN = 'https://cdn.jsdelivr.net/pyodide/v' + PYODIDE_VERSION + '/full/';
 
 importScripts(PYODIDE_CDN + 'pyodide.js');
 
@@ -42,8 +42,8 @@ async function init() {
 
     } catch (err) {
         self.postMessage({
-            type    : 'load-error',
-            message : err.message || String(err)
+            type: 'load-error',
+            message: err.message || String(err)
         });
     }
 }
@@ -75,7 +75,22 @@ self.onmessage = async function (e) {
 
     } catch (err) {
         /* Pyodide wraps Python tracebacks in the JS error message */
-        self.postMessage({ type: 'error', message: err.message || String(err) });
+        var fullMessage = err.message || String(err);
+
+        // Extract the last non-empty line which usually contains the actual Python error
+        var lines = fullMessage.trim().split('\n');
+        var lastLine = lines[lines.length - 1] || 'Unknown Error';
+
+        // Example lastLine: "NameError: name 'x' is not defined"
+        var errorParts = lastLine.split(':');
+        var errorType = err.type || (errorParts[0] ? errorParts[0].trim() : 'Error');
+        var errorDetails = errorParts.slice(1).join(':').trim() || lastLine;
+
+        var formattedMessage = "\u274C Error Type: " + errorType + "\n" +
+            "\uD83D\uDCDC Message: " + errorDetails + "\n\n" +
+            "--- Full Traceback ---\n" + fullMessage;
+
+        self.postMessage({ type: 'error', message: formattedMessage });
     }
 };
 

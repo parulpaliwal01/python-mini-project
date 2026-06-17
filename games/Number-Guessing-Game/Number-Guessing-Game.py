@@ -116,4 +116,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        random.seed(int(sys.argv[1]))
     main()

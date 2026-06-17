@@ -1,8 +1,10 @@
 import unittest
+import subprocess
 import os
-from unittest.mock import patch
-import io
 import sys
+
+SEED = 42
+
 
 class TestNumberGuessing(unittest.TestCase):
     def setUp(self):
@@ -11,55 +13,32 @@ class TestNumberGuessing(unittest.TestCase):
             "games", "Number-Guessing-Game", "Number-Guessing-Game.py"
         ))
 
-    @patch('builtins.input', side_effect=['1', '50', 'n'])
-    @patch('random.randint', return_value=50)
-    def test_game_win(self, mock_randint, mock_input):
-        captured_output = io.StringIO()
-        sys.stdout = captured_output
-        try:
-            with open(self.script_path, 'r', encoding='utf-8') as f:
-                exec(f.read(), {'__name__': '__main__'})
-        except StopIteration:
-            pass
-        finally:
-            sys.stdout = sys.__stdout__
+    def run_script(self, inputs):
+        input_data = "\n".join(inputs) + "\n"
+        result = subprocess.run(
+            [sys.executable, self.script_path, str(SEED)],
+            input=input_data,
+            text=True,
+            capture_output=True,
+            encoding='utf-8',
+            timeout=10
+        )
+        return result.stdout
 
-        output = captured_output.getvalue()
+    def test_game_win(self):
+        output = self.run_script(["1", "82", "n"])
         self.assertIn("Correct! You guessed the number.", output)
 
-    @patch('builtins.input', side_effect=['3', '1', '2', '3', '4', '5', 'n'])
-    @patch('random.randint', return_value=50) 
-    def test_game_lose(self, mock_randint, mock_input):
-        captured_output = io.StringIO()
-        sys.stdout = captured_output
-        try:
-            with open(self.script_path, 'r', encoding='utf-8') as f:
-                exec(f.read(), {'__name__': '__main__'})
-        except StopIteration:
-            pass
-        finally:
-            sys.stdout = sys.__stdout__
-
-        output = captured_output.getvalue()
+    def test_game_lose(self):
+        output = self.run_script(["3", "1", "2", "3", "4", "5", "n"])
         self.assertIn("Out of attempts.", output)
 
-    @patch('builtins.input', side_effect=['1', 'abc', '150', '50', 'n'])
-    @patch('random.randint', return_value=50)
-    def test_game_invalid_inputs(self, mock_randint, mock_input):
-        captured_output = io.StringIO()
-        sys.stdout = captured_output
-        try:
-            with open(self.script_path, 'r', encoding='utf-8') as f:
-                exec(f.read(), {'__name__': '__main__'})
-        except StopIteration:
-            pass
-        finally:
-            sys.stdout = sys.__stdout__
-
-        output = captured_output.getvalue()
+    def test_game_invalid_inputs(self):
+        output = self.run_script(["1", "abc", "150", "82", "n"])
         self.assertIn("Invalid input.", output)
         self.assertIn("Enter a number between 1 and 100.", output)
         self.assertIn("Correct! You guessed the number.", output)
+
 
 if __name__ == "__main__":
     unittest.main()

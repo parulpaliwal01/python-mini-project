@@ -3191,7 +3191,7 @@ function initializeProject(projectName) {
     "caesar-cipher": "initCaesarCipher",
     "war-card-game": "initWarCardGame",
     "number-sliding-puzzle": "initNumberSlidingPuzzle",
-    "budget-tracker": "initBudgetTracker"
+    "budget-tracker": "initBudgetTracker",
     "caesar-cipher": "initCaesarCipher"
   };
 

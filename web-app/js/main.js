@@ -3,6 +3,7 @@
    ═══════════════════════════════════════════════════════════════ */
 
 import { updateProjectVisibility } from "./modules/utils.js";
+import CopyButton from "./modules/copyButton.js";
 
 const html = document.documentElement;
 const themeToggle = document.getElementById('themeToggle');

@@ -560,6 +560,7 @@ projects = [
     ("Reverse Hangman", "games", "reverse-hangman.webp"),
     ("Chess Game", "games", "chess.webp"),
     ("Number Sliding Puzzle", "games", "number-sliding-puzzle.webp"),
+    ("War Card Game", "games", "war-card-game.webp"),
 
     # MATH
     ("AP/GP/AGP/HP Recognizer", "math", "progression-recognizer.webp"),

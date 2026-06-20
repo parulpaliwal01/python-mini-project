@@ -4,7 +4,7 @@
 // No API calls — pure client-side text analysis.
 // ============================================
 
-function getAIResumeAnalyzerHTML() {
+function getResumeAnalyzerHTML() {
     return `
         <div class="resume-analyzer-shell">
             <div class="resume-analyzer-hero">
@@ -58,7 +58,7 @@ function getAIResumeAnalyzerHTML() {
     `;
 }
 
-function initAIResumeAnalyzer() {
+function initResumeAnalyzer() {
     const analyzeBtn      = document.getElementById('analyzeBtn');
     const resumeInput     = document.getElementById('resumeInput');
     const fileStatus      = document.getElementById('resumeFileStatus');
@@ -296,10 +296,10 @@ function initAIResumeAnalyzer() {
         ].slice(0, 6);
 
         if (displaySkills.length === 0) {
-            kwList.textContent = '<p style="color:var(--text-secondary);font-size:0.9rem;">No matching keywords detected. Try a .txt version of your resume.</p>';
+            kwList.innerHTML = '<p style="color:var(--text-secondary);font-size:0.9rem;">No matching keywords detected. Try a .txt version of your resume.</p>';
         } else {
             displaySkills.forEach(({ name, pct, found }) => {
-                kwList.textContent += `
+                kwList.innerHTML += `
                     <div class="resume-keyword-item">
                         <span style="${found ? '' : 'color:var(--text-secondary);opacity:0.6;'}">${capitalise(name)}${found ? '' : ' ❌'}</span>
                         <div class="resume-bar">
@@ -310,11 +310,11 @@ function initAIResumeAnalyzer() {
         }
 
         const suggestionsEl = document.getElementById('resumeSuggestions');
-        suggestionsEl.textContent = '';
+        suggestionsEl.innerHTML = '';
 
         const suggestions = buildSuggestions({ foundSkills, missingSkills, eduFound, expFound, projFound });
         suggestions.forEach(s => {
-            suggestionsEl.textContent += `
+            suggestionsEl.innerHTML += `
                 <div class="resume-suggestion">
                     <i class="fa-solid ${s.ok ? 'fa-check' : 'fa-triangle-exclamation'}" style="color:${s.ok ? 'var(--accent)' : 'var(--warning-color,#f59e0b)'}; margin-top:0.2rem;"></i>
                     <p style="margin:0;">${s.text}</p>

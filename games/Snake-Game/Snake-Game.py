@@ -232,12 +232,12 @@ def main():
 
     game_text.write("Press SPACEBAR to Start", align="center", font=("Arial", 24, "bold"))
 
-    while True:
+    def game_loop():
         screen.update()
 
         if game_state in ["IDLE", "PAUSED", "GAME_OVER"]:
-            time.sleep(0.1)
-            continue
+            screen.ontimer(game_loop, 100)
+            return
 
         # Border collision
         if (
@@ -250,7 +250,8 @@ def main():
                 gameover_sound.play()
             game_text.write("GAME OVER - Press SPACE to Restart", align="center", font=("Arial", 20, "bold"))
             game_state = "GAME_OVER"
-            continue
+            screen.ontimer(game_loop, 100)
+            return
 
         # Food collision
         if head.distance(food) < GRID_SIZE:
@@ -268,7 +269,6 @@ def main():
                 game_text.clear()
                 game_text.write(f"LEVEL {level}", align="center", font=("Arial", 24, "bold"))
                 screen.update()
-                time.sleep(0.5)
                 game_text.clear()
 
             generate_food()
@@ -301,9 +301,12 @@ def main():
                 break
 
         if game_state == "GAME_OVER":
-            continue
+            screen.ontimer(game_loop, 100)
+            return
 
-        time.sleep(speed)
+        screen.ontimer(game_loop, int(speed * 1000))
+
+    screen.ontimer(game_loop, 100)
 
 if __name__ == '__main__':
     main()

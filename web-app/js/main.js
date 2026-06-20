@@ -1,8 +1,9 @@
 /* ═══════════════════════════════════════════════════════════════
-   main.js — App wiring for Premium Python Projects Gallery
+  main.js — App wiring for Premium Python Projects Gallery
    ═══════════════════════════════════════════════════════════════ */
 
 import { updateProjectVisibility } from "./modules/utils.js";
+import CopyButton from "./modules/copyButton.js";
 
 const html = document.documentElement;
 const themeToggle = document.getElementById('themeToggle');
@@ -350,32 +351,29 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  /* ── Mobile Sidebar Toggle ──────────────────────────────── */
-  var mobileSidebarToggle = document.getElementById("mobileSidebarToggle");
+  /* ── Mobile Sidebar Close ──────────────────────────────── */
   var mainSidebar = document.getElementById("mainSidebar");
-  if (mobileSidebarToggle && mainSidebar) {
-    mobileSidebarToggle.addEventListener("click", function () {
-      var active = mainSidebar.classList.toggle("open");
-      mobileSidebarToggle.setAttribute("aria-expanded", active);
-      var icon = mobileSidebarToggle.querySelector("i");
-      if (icon) icon.className = active ? "fas fa-times" : "fas fa-bars";
-    });
+  var sidebarMobileClose = document.getElementById("sidebarMobileClose");
+  var sidebarBackdrop = document.getElementById("sidebarBackdrop");
 
-    document.addEventListener("click", function (e) {
-      if (
-        mainSidebar &&
-        mobileSidebarToggle &&
-        !mainSidebar.contains(e.target) &&
-        e.target !== mobileSidebarToggle &&
-        mainSidebar.classList.contains("open")
-      ) {
-        mainSidebar.classList.remove("open");
-        mobileSidebarToggle.setAttribute("aria-expanded", "false");
-        var icon = mobileSidebarToggle.querySelector("i");
-        if (icon) icon.className = "fas fa-bars";
-      }
-    });
+  function closeMobileSidebar() {
+    document.body.classList.remove("sidebar-active");
   }
+
+  if (sidebarMobileClose) {
+    sidebarMobileClose.addEventListener("click", closeMobileSidebar);
+  }
+  if (sidebarBackdrop) {
+    sidebarBackdrop.addEventListener("click", closeMobileSidebar);
+  }
+  document.addEventListener("keydown", function (e) {
+    if (
+      e.key === "Escape" &&
+      document.body.classList.contains("sidebar-active")
+    ) {
+      closeMobileSidebar();
+    }
+  });
 
   /* ── Desktop Sidebar Toggle ──────────────────────────────── */
   var desktopSidebarToggle = document.getElementById("sidebarCollapseBtn");
@@ -728,6 +726,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
       document.body.classList.toggle("sidebar-active", showSidebar);
       console.log('Sidebar active:', showSidebar, 'scrollY:', window.scrollY);
+
+      // Hide fixed-theme-toggle if sidebar is active
+
+      const fixedThemeToggle = document.getElementById("fixed-theme-toggle");
+      if(showSidebar){
+        fixedThemeToggle.style.display = "none";
+      }
+      else{
+        fixedThemeToggle.style.display = "block";
+      }
+
     };
 
     window.addEventListener('scroll', checkAndToggleSidebar);
@@ -747,10 +756,11 @@ document.addEventListener("DOMContentLoaded", function () {
       var q = query.toLowerCase();
 
       var catMatch = currentCategory === "all" || category === currentCategory;
-      var searchMatch =
-        title.toLowerCase().includes(q) ||
-        desc.toLowerCase().includes(q) ||
-        tags.includes(q);
+      
+      // FIX FOR ISSUE #1032: Strict Title Matching
+      // Removed description and hidden tag fuzzy-matching to prevent irrelevant 
+      // projects (like FLAMES Game) from appearing for unrelated queries.
+      var searchMatch = title.toLowerCase().includes(q);
 
       if (catMatch && searchMatch) {
         matches.push({
@@ -899,10 +909,18 @@ document.addEventListener("DOMContentLoaded", function () {
         var iconBox = document.createElement("div");
         iconBox.className = "dropdown-item-icon";
         var banner = project.card.querySelector(".card-banner");
+        projectCards.forEach(function(card) {
+        var banner = card.querySelector(".card-banner");
+        var title = card.querySelector("h3");
+
+        if (banner && title) {
+            banner.alt = title.textContent.trim() + " project preview";
+        }
+        });
         if (banner) {
           var img = document.createElement("img");
           img.src = banner.src;
-          img.alt = "";
+          img.alt = project.title + " project preview";
           iconBox.appendChild(img);
         }
 
@@ -1278,6 +1296,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    
     // Clear content
     if (modalBody) {
       modalBody.innerHTML = "";

@@ -269,8 +269,8 @@ function initBubbleSort() {
         const arr = Array.from({ length: 8 }, () => Math.floor(Math.random() * 90) + 10);
         input.value = arr.join(' ');
         renderBars(arr);
-        resultDiv.textContent = '';
-        statsDiv.textContent = '';
+        resultDiv.innerHTML = '';
+        statsDiv.innerHTML = '';
     });
 
     function sleep(ms) {
@@ -354,18 +354,18 @@ function initBubbleSort() {
 
         const raw = input.value.trim();
         if (!raw) {
-            resultDiv.textContent = `<p style="color:var(--danger-color)">⚠️ Please enter numbers!</p>`;
+            resultDiv.innerHTML = `<p style="color:var(--danger-color)">⚠️ Please enter numbers!</p>`;
             return;
         }
 
         const arr = raw.split(/\s+/).map(Number);
         if (arr.some(isNaN)) {
-            resultDiv.textContent = `<p style="color:var(--danger-color)">⚠️ Please enter valid integers only!</p>`;
+            resultDiv.innerHTML = `<p style="color:var(--danger-color)">⚠️ Please enter valid integers only!</p>`;
             return;
         }
 
         if (arr.length < 2) {
-            resultDiv.textContent = `<p style="color:var(--danger-color)">⚠️ Enter at least 2 numbers!</p>`;
+            resultDiv.innerHTML = `<p style="color:var(--danger-color)">⚠️ Enter at least 2 numbers!</p>`;
             return;
         }
 
@@ -373,12 +373,12 @@ function initBubbleSort() {
         comparisons = 0;
         swaps = 0;
         startBtn.disabled = true;
-        resultDiv.textContent = `<p style="color:var(--text-secondary)">⏳ Sorting...</p>`;
+        resultDiv.innerHTML = `<p style="color:var(--text-secondary)">⏳ Sorting...</p>`;
 
         renderBars([...arr]);
         const sorted = await bubbleSortVisualize([...arr]);
 
-        resultDiv.textContent = `
+        resultDiv.innerHTML = `
             <p style="color:var(--success-color); font-weight:700; font-size:1.2rem">
                 ✅ Sorted: [ ${sorted.join(', ')} ]
             </p>

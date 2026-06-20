@@ -68,6 +68,8 @@
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha384-iYQieczLE1ZYcx91pNAt4whAqKhW2ED8oBkFkXhNRCGF7GcCQBQb0or7TGoBMgo"
+      crossorigin="anonymous">
     />
     <style>
       /* ── Page background ── */
@@ -329,6 +331,25 @@
       <section class="projects-section" aria-label="Game Projects">
         <div class="container">
           <div class="projects-grid" id="projectsGrid">
+            <div
+              class="project-card"
+              data-category="games"
+              data-project="number-sliding-puzzle"
+            >
+              <img
+                class="card-banner"
+                src="assets/banners/number-sliding-puzzle.webp"
+                alt="Number Sliding Puzzle"
+                loading="lazy"
+              / loading="lazy">
+              <div class="card-actions">
+                <button class="btn-play" aria-label="Play Number Sliding Puzzle">Try It</button>
+              </div>
+
+              <h3>Number Sliding Puzzle</h3>
+              <p>Arrange numbers in ascending order by sliding them!</p>
+            </div>
+
             <div
               class="project-card"
               data-category="games"
@@ -727,6 +748,7 @@
     <script defer src="js/projects/word-scramble.js"></script>
     <script defer src="js/projects/spot-the-difference.js"></script>
     <script defer src="js/projects/sudoku-game.js"></script>
+    <script defer src="js/projects/number-sliding-puzzle.js"></script>
     <script defer src="js/projects.js"></script>
     <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script defer type="module" src="js/main.js"></script>

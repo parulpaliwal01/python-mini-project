@@ -1,6 +1,43 @@
 import os
 import math
+import warnings
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
+
+
+def load_fonts():
+    """Load title/subtitle fonts with a robust, OS-independent fallback chain.
+
+    Tries a bundled font first (works identically on every OS), then falls
+    back to common Windows/Linux system fonts. If nothing is found, warns
+    loudly instead of silently rendering unreadable bitmap text.
+    """
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    bundled_font = os.path.join(script_dir, "assets", "fonts", "DejaVuSans-Bold.ttf")
+
+    candidates = [
+        bundled_font,                                              # 1. Repo-bundled font (preferred)
+        "segoeui.ttf",                                             # 2. Windows
+        "arial.ttf",                                               # 3. Windows fallback
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",    # 4. Common Linux path
+    ]
+
+    for path in candidates:
+        try:
+            font_title = ImageFont.truetype(path, 36)
+            font_subtitle = ImageFont.truetype(path, 16)
+            return font_title, font_subtitle
+        except IOError:
+            continue
+
+    warnings.warn(
+        "No usable .ttf font found (checked bundled, Windows, and common Linux paths). "
+        "Falling back to PIL's default bitmap font - banner text will be unreadable. "
+        "Add a .ttf to assets/fonts/ to fix this.",
+        RuntimeWarning,
+        stacklevel=2,
+    )
+    return ImageFont.load_default(), ImageFont.load_default()
+
 
 def create_radial_gradient(color_center, color_edge):
     """Create a high-fidelity smooth radial gradient by resizing a eased 24x24 radial dot."""
@@ -44,6 +81,12 @@ def draw_perspective_grid(draw, color):
 
 def generate_banner(name, category, filename):
     """Generate a highly customized, vector-styled banner for the card."""
+    # Load fonts once, up front, so they're available to every branch below
+    # (previously font_title was only loaded near the end, which crashed
+    # the "matrix" branch with a NameError since it referenced font_title
+    # before it existed).
+    font_title, font_subtitle = load_fonts()
+
     # Tailor color scheme by category
     if category == "games":
         color_center = (25, 10, 55)
@@ -100,6 +143,18 @@ def generate_banner(name, category, filename):
             y = 120 + (i // 2) * 120
             v_draw.rounded_rectangle([x, y, x + 140, y + 90], radius=12, fill=(255,255,255,8), outline=color_accent, width=2)
             v_draw.text((x + 70, y + 45), val, fill=color_accent, anchor="mm")
+    elif "sliding" in n_lower or "puzzle" in n_lower:
+        # Draw a 3x3 grid with sliding numbers
+        for i in range(9):
+            if i == 8:  # Empty space
+                continue
+            r_idx = i // 3
+            c_idx = i % 3
+            x = 240 + c_idx * 110
+            y = 120 + r_idx * 75
+            val = str(i + 1)
+            v_draw.rounded_rectangle([x, y, x + 90, y + 60], radius=10, fill=(255,255,255,12), outline=color_accent, width=2)
+            v_draw.text((x + 45, y + 30), val, fill=color_accent, anchor="mm")
     elif "fibonacci" in n_lower:
         # Draw golden spiral
         cx, cy = 400, 225
@@ -231,6 +286,19 @@ def generate_banner(name, category, filename):
         v_draw.line([(cx, 50), (cx, 400)], fill=(255,255,255,80), width=2)
         for r in [50, 100, 150]:
             v_draw.ellipse([cx-r, cy-r, cx+r, cy+r], outline=color_accent, width=2)
+    elif "fourier" in n_lower or "series" in n_lower:
+        # Drawing epicycles
+        cx, cy = 300, 225
+        # Circles
+        v_draw.ellipse([cx-80, cy-80, cx+80, cy+80], outline=color_accent, width=2)
+        v_draw.ellipse([cx+80-30, cy-30, cx+80+30, cy+30], outline=color_accent, width=1)
+        # Waveform line
+        pts = []
+        for x in range(cx + 150, 750, 5):
+            y = cy - 80 * math.sin((x - cx - 150) * 0.05) - 30 * math.sin((x - cx - 150) * 0.15)
+            pts.append((x, y))
+        v_draw.line(pts, fill=color_accent, width=3)
+        v_draw.line([(cx+110, cy), (cx+150, pts[0][1])], fill=(255,255,255,100), width=2, joint="curve")
     elif "collatz" in n_lower:
         # Beautiful branching curves representing paths
         cx, cy = 400, 380
@@ -423,6 +491,62 @@ def generate_banner(name, category, filename):
                 v_draw.text((x, y), sample_nums[i][j], fill=color_accent, anchor="mm", font=font_title)
         # Draw operation symbol
         v_draw.text((400, 280), "×", fill=color_accent, anchor="mm", font=font_title)
+    elif "reverse" in n_lower or "hangman" in n_lower:
+        # AI brain + hangman gallows
+        cx, cy = 400, 225
+        # Gallows
+        v_draw.line([(250, 350), (400, 350)], fill=color_accent, width=4)
+        v_draw.line([(320, 350), (320, 120)], fill=color_accent, width=4)
+        v_draw.line([(320, 120), (450, 120)], fill=color_accent, width=4)
+        v_draw.line([(450, 120), (450, 150)], fill=color_accent, width=2)
+        # AI brain/robot icon
+        v_draw.ellipse([cx-30, cy-30, cx+30, cy+30], outline=color_accent, width=3)
+        v_draw.ellipse([cx-15, cy-15, cx+15, cy+15], outline=color_accent, width=2)
+        v_draw.text((cx, cy), "AI", fill=color_accent, anchor="mm")
+    elif "unit converter" in n_lower:
+        cx, cy = 400, 225
+
+        # Circular conversion flow
+        v_draw.arc([250, 75, 550, 375], 30, 330,
+                fill=color_accent, width=4)
+
+        # Arrow head
+        v_draw.polygon(
+            [(530, 135), (555, 120), (545, 150)],
+            fill=color_accent
+        )
+
+        # Measurement symbols
+        symbols = [
+            ("📏", 400, 110),   # Length
+            ("⚖", 520, 225),    # Weight
+            ("🌡", 400, 340),    # Temperature
+            ("⏱", 280, 225)     # Time
+        ]
+
+        for sym, x, y in symbols:
+            v_draw.rounded_rectangle(
+                [x-35, y-35, x+35, y+35],
+                radius=12,
+                fill=(255,255,255,12),
+                outline=color_accent,
+                width=2
+            )
+            v_draw.text((x, y), sym,
+                        fill=color_accent,
+                        anchor="mm")
+
+        # Center convert icon
+        v_draw.rounded_rectangle(
+            [350, 175, 450, 275],
+            radius=18,
+            fill=(255,255,255,16),
+            outline=color_accent,
+            width=3
+        )
+        v_draw.text((400,225), "⇄",
+                    fill=color_accent,
+                    anchor="mm")
     elif "pet" in n_lower or "productivity" in n_lower:
         # Cute paw print
         cx, cy = 400, 225
@@ -430,6 +554,15 @@ def generate_banner(name, category, filename):
         v_draw.ellipse([cx-35, cy-40, cx-15, cy-20], fill=color_accent) # toe 1
         v_draw.ellipse([cx-10, cy-50, cx+10, cy-30], fill=color_accent) # toe 2
         v_draw.ellipse([cx+15, cy-40, cx+35, cy-20], fill=color_accent) # toe 3
+    elif "budget" in n_lower:
+        # Wallet + bar chart for budget tracker
+        cx, cy = 400, 225
+        v_draw.rounded_rectangle([cx-90, cy-50, cx+90, cy+50], radius=16, fill=(255,255,255,12), outline=color_accent, width=3)
+        v_draw.rounded_rectangle([cx+40, cy-15, cx+90, cy+15], radius=8, fill=color_accent)
+        bar_heights = [30, 55, 40, 70]
+        for i, h in enumerate(bar_heights):
+            x = 230 + i * 50
+            v_draw.rectangle([x, 320 - h, x + 30, 320], fill=color_accent)
     else:
         # Default nice abstract waves
         points = []
@@ -447,18 +580,6 @@ def generate_banner(name, category, filename):
     glass_layer = Image.new("RGBA", (800, 450))
     gl_draw = ImageDraw.Draw(glass_layer)
     gl_draw.rounded_rectangle([150, 110, 650, 340], radius=24, fill=(255, 255, 255, 14), outline=(255, 255, 255, 45), width=2)
-    
-    # Load fonts cleanly
-    try:
-        font_title = ImageFont.truetype("segoeui.ttf", 36)
-        font_subtitle = ImageFont.truetype("segoeui.ttf", 16)
-    except IOError:
-        try:
-            font_title = ImageFont.truetype("arial.ttf", 36)
-            font_subtitle = ImageFont.truetype("arial.ttf", 16)
-        except IOError:
-            font_title = ImageFont.load_default()
-            font_subtitle = ImageFont.load_default()
 
     # Draw Text Labels
     # Shadow text
@@ -472,9 +593,10 @@ def generate_banner(name, category, filename):
 
     final_img = Image.alpha_composite(composite, glass_layer).convert("RGB")
     
-    # Save Image
+    # Save Image (true WebP encoding — filenames use .webp, so save as WebP,
+    # not JPEG bytes inside a .webp container)
     os.makedirs(os.path.dirname(filename), exist_ok=True)
-    final_img.save(filename, "JPEG", quality=90)
+    final_img.save(filename, "WEBP", quality=90, method=6)
     print(f"Generated HD banner: {filename}")
 
 # Project category directory mappings
@@ -485,7 +607,7 @@ projects = [
     ("Coin Flip", "games", "coin-flip.webp"),
     ("Dice Rolling", "games", "dice-rolling.webp"),
     ("Dots & Boxes AI", "games", "dots-boxes.webp"),
-    ("Emoji Memory Game", "games", "emoji-memory-game.webp"),  # FIXED filename
+    ("Emoji Memory Game", "games", "emoji-memory-game.webp"),
     ("FLAMES Game", "games", "flames.webp"),
     ("Flappy Game", "games", "flappy-game.webp"),
     ("Hangman", "games", "hangman.webp"),
@@ -503,6 +625,10 @@ projects = [
     ("Sudoku Solver & Game", "games", "sudoku-game.webp"),
     ("Productive Pet", "utilities", "productive-pet.webp"),
     ("Progress Tracker", "utilities", "progress-tracker.webp"),
+    ("Reverse Hangman", "games", "reverse-hangman.webp"),
+    ("Chess Game", "games", "chess.webp"),
+    ("Number Sliding Puzzle", "games", "number-sliding-puzzle.webp"),
+    ("War Card Game", "games", "war-card-game.webp"),
 
     # MATH
     ("AP/GP/AGP/HP Recognizer", "math", "progression-recognizer.webp"),
@@ -519,15 +645,21 @@ projects = [
     ("Bubble Sort", "math", "bubble-sort.webp"),
     ("Tower of Hanoi", "math", "tower-of-hanoi.webp"),
     ("Matrix Calculator", "math", "matrix-calculator.webp"),
+    ("Fourier Series", "math", "fourier-series.webp"),
 
     # UTILITIES
+    # NOTE: "Tower of Hanoi" under utilities removed — it was a duplicate of
+    # the math entry above and wrote to the same "tower-of-hanoi.webp" path,
+    # silently overwriting it. If a utilities-specific banner is wanted,
+    # give it a distinct filename instead (e.g. "tower-of-hanoi-util.webp").
     ("Morse Code", "utilities", "morse-code.webp"),
     ("Number Converter", "utilities", "number-converter.webp"),
-    ("Tower of Hanoi", "utilities", "tower-of-hanoi.webp"),
     ("Typing Speed Tester", "utilities", "typing-speed-tester.webp"),
     ("Color Palette Suggestor", "utilities", "color-palette.webp"),
     ("AI Resume Analyzer", "utilities", "resume-analyzer.webp"),
     ("Caesar Cipher", "utilities", "caesar-cipher.webp"),
+    ("Unit Converter", "utilities", "unit-converter.webp"),
+    ("Budget Tracker", "utilities", "budget-tracker.webp"),
 ]
 
 # Run generation

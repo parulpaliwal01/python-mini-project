@@ -225,7 +225,7 @@ function initPrimeAnalyzer() {
         });
         
         if (primes.length === 0) {
-            primesDisplay.textContent = '<p style="color: var(--text-secondary);">No primes found in range</p>';
+            primesDisplay.innerHTML = '<p style="color: var(--text-secondary);">No primes found in range</p>';
         }
     }
     
@@ -249,7 +249,7 @@ function initPrimeAnalyzer() {
         });
         
         if (primes.length === 0) {
-            rangeDisplay.textContent = '<p style="color: var(--text-secondary);">No primes found in range</p>';
+            rangeDisplay.innerHTML = '<p style="color: var(--text-secondary);">No primes found in range</p>';
         }
     }
     

@@ -24,6 +24,12 @@ function getProjectHTML(projectName) {
         'nqueens' : getNQueensHTML(),
         'matrix-calculator': () => getMatrixCalculatorHTML(),
         'sudoku-game': getSudokuGameHTML()
+        'unit-converter': getUnitConverterHTML(),
+        'resume-analyzer': getResumeAnalyzerHTML(),
+        'reverse-hangman': () => getReverseHangmanHTML,
+        'snake-game': getSnakeGameHTML(),
+        'bubble-sort': getBubbleSortHTML(),
+        'fourier-series': getFourierSeriesHTML()
     };
     
     return projects[projectName] || '<h2>Project Coming Soon!</h2>';
@@ -52,6 +58,12 @@ function initializeProject(projectName) {
         'nqueens' : initNQueens,
         'matrix-calculator': initMatrixCalculator,
         'sudoku-game': initSudokuGame
+        'nqueens' : initNQueens(),
+        'matrix-calculator': initMatrixCalculator,
+        'unit-converter':initUnitConverter,
+        'resume-analyzer':initResumeAnalyzer,
+        'reverse-hangman': initReverseHangman,
+        'fourier-series': initFourierSeries
     };
     
     if (initializers[projectName]) {
@@ -1598,6 +1610,26 @@ function getProjectHTML(projectName) {
 
 const projectInstructions = {
   // GAMES
+  "war-card-game": {
+    title: "⚔️ How to Play War Card Game",
+    steps: [
+      "Enter names or check the option to play against the CPU.",
+      "Each player starts with a deck of 26 cards.",
+      "Click 'Draw / Battle' to draw the top card from both decks.",
+      "The player with the higher card rank wins the round and gets a point.",
+      "Ace is the highest, 2 is the lowest.",
+      "Play continues until all cards are drawn. The player with the most points wins!"
+    ]
+  },
+  "number-sliding-puzzle": {
+    title: "🧩 How to Play Number Sliding Puzzle",
+    steps: [
+      "Use arrow keys (← ↑ → ↓) or click/tap on tiles next to the empty space to slide them.",
+      "Arrange the numbers in ascending order from 1 to 8, with the blank space at the bottom right.",
+      "A moves counter keeps track of your steps.",
+      "Click the Reset button to restart the game."
+    ]
+  },
   "2048-game": {
     title: "🎮 How to Play 2048",
     steps: [
@@ -1732,6 +1764,16 @@ const projectInstructions = {
       "Beat the dealer to win"
     ]
   },
+  "reverse-hangman": {
+  title: "🤖 How to Play Reverse Hangman",
+  steps: [
+    "Think of a secret word from the dictionary (40+ words available)",
+    "The AI tries to guess your word using letter frequency analysis",
+    "Tell the AI if its guess is correct or not",
+    "AI gets 8 attempts max — can you beat the computer?",
+    "Watch the hangman visual feedback as AI guesses"
+  ]
+},
 
   // MATH
   "calculator": {
@@ -1835,6 +1877,16 @@ const projectInstructions = {
       "Click Recognize to identify the sequence type"
     ]
   },
+  "matrix-calculator": {
+    title: "🧮 How to Use Matrix Calculator",
+    steps: [
+        "Select matrix dimensions (rows × columns)",
+        "Enter values into each cell",
+        "Choose operation: Addition, Subtraction, Multiplication, Transpose, Determinant, Rank, or Inverse",
+        "Click Calculate to see the result",
+        "Determinant & Inverse work only for square matrices"
+    ]
+  },
 
   // UTILITIES
   "color-palette": {
@@ -1844,6 +1896,16 @@ const projectInstructions = {
       "Choose a mood",
       "Click 'Generate Palette'",
       "Click any color to copy its hex code"
+    ]
+  },
+  "budget-tracker": {
+    title: "💰 How to Use Budget Tracker",
+    steps: [
+      "Select the transaction type (Income or Expense) from the dropdown.",
+      "Enter a category, description (optional), and positive amount value.",
+      "Click 'Add Transaction' to log it in your dashboard.",
+      "Analyze spending behavior through dynamic category-wise progress bars.",
+      "Clear individual records using the delete action or wipe out all history securely."
     ]
   },
   "morse-code": {
@@ -1912,7 +1974,17 @@ const projectInstructions = {
       "Mark projects as complete",
       "See your progress over time"
     ]
-  }
+  },
+  "unit-converter": {
+    title: "📏 How to Use Unit Converter",
+    steps: [
+        "Select conversion category (Length, Mass, Temperature, etc.)",
+        "Choose input and output units",
+        "Enter the value to convert",
+        "Result appears instantly",
+        "Supports multiple unit types"
+  ]
+}
 };
 
 function getProjectInstructions(projectName) {
@@ -3132,6 +3204,13 @@ function initializeProject(projectName) {
     "resume-analyzer": "initAIResumeAnalyzer",
     "caesar-cipher": "initCaesarCipher",
     "sudoku-game": "initSudokuGame"
+    "resume-analyzer": "initResumeAnalyzer",
+    "caesar-cipher": "initCaesarCipher",
+    "war-card-game": "initWarCardGame",
+    "number-sliding-puzzle": "initNumberSlidingPuzzle",
+    "budget-tracker": "initBudgetTracker",
+    "caesar-cipher": "initCaesarCipher",
+    "fourier-series": "initFourierSeries"
   };
 
   const initializerName = initializers[projectName];

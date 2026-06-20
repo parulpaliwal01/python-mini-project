@@ -508,7 +508,7 @@ function initHangman() {
 
             if (wrongAttempts >= maxAttempts) {
                 gameOver = true;
-                gameMessage.textContent = ` Game Over! The word was: <strong>${currentWord.toUpperCase()}</strong>`;
+                gameMessage.innerHTML = ` Game Over! The word was: <strong>${currentWord.toUpperCase()}</strong>`;
                 gameMessage.className = 'game-message lose';
                 disableAllKeys();
                 // Reveal word in red

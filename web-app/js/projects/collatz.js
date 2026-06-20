@@ -173,7 +173,7 @@ function initCollatz() {
         let number = parseInt(numberInput.value);
         
         if (!number || number < 1) {
-            sequenceDiv.textContent = '<p style="color: var(--danger-color);">⚠️ Please enter a positive integer!</p>';
+            sequenceDiv.innerHTML = '<p style="color: var(--danger-color);">⚠️ Please enter a positive integer!</p>';
             statsDiv.innerHTML  = '';
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             return;

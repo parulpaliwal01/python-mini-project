@@ -40,31 +40,22 @@
 
 ## 📚 Table of Contents
 
-- [🎯 Repo Introduction](#-repo-introduction)
-- [🌐 Live Demo](#-live-demo)
-- [📂 Repo Structure](#-repo-structure)
-- [🧩 What's Inside](#-whats-inside)
-- [🌐 Web App Catalog](#-web-app-catalog)
-  - [Games](#games)
-  - [Math](#math)
-  - [Utilities](#utilities)
-- [🧭 Python Projects Without a Web App Yet](#-python-projects-without-a-web-app-yet)
+- [Repo Introduction](#-repo-introduction)
+- [Repo Structure](#-repo-structure)
+- [What's Inside](#-whats-inside)
 - [Contributors](#contributors)
-- [📝 License](#-license)
-- [💬 Connect & Share](#-connect--share)
+- [License](#-license)
+- [Connect & Share](#-connect--share)
 
 ## 🎯 Repo Introduction
 
 This repository is a collection of small Python games and utility projects built to make learning Python more practical and engaging. It includes both command-line projects and a browser-based web app for trying the projects online.
 
-## 🌐 Live Demo
-
-Try the web app here: https://python-mini-project-lovat.vercel.app/
-
 ## 📂 Repo Structure
 
 ```text
 python-mini-project/
+|
 ├── games/
 │   ├── Snake-Game/
 │   ├── Rock-Paper-Scissor/
@@ -76,10 +67,6 @@ python-mini-project/
 ├── utilities/
 │   ├── Text-to-Morse/
 │   ├── Typing-Speed-Tester/
-│   └── ...
-├── tests/
-│   ├── test_armstrong.py
-│   ├── test_fibonacci.py
 │   └── ...
 ├── web-app/
 │   ├── css/
@@ -237,72 +224,6 @@ deactivate
 - Math projects for learning logic and problem solving
 - Utility tools for practical use cases
 - A web app version for browser-based access
-
-## 🌐 Web App Catalog
-
-The browser app currently exposes 40 projects:
-
-### Games
-
-- 2048 Game
-- BlackJack21
-- Coin Flip
-- Dice Rolling
-- Dots & Boxes AI
-- Emoji Memory Game
-- FLAMES Game
-- Flappy Game
-- Hangman
-- Math Quiz
-- Number Guessing
-- Password Forge
-- Rock Paper Scissors
-- Simon Says
-- Snake Game
-- Whack-a-Mole
-- Word Scramble
-- Spot the Difference
-- War Card Game
-- Number Sliding Puzzle
-
-### Math
-
-- AP/GP/AGP/HP Recognizer
-- Armstrong Numbers
-- Binary Search
-- Bubble Sort
-- Quick Sort
-- Calculator
-- Collatz Conjecture
-- Coordinate to Polar
-- Derivative Calculator
-- Fibonacci Series
-- Pascal's Triangle
-- Prime Analyzer
-- Projectile Motion
-- Progress Tracker
-
-### Utilities
-
-- AI Resume Analyzer
-- Budget Tracker
-- Color Palette Suggestor
-- Morse Code
-- Number Converter
-- Productive Pet
-- Tower of Hanoi
-- Typing Speed Tester
-
-## 🧭 Python Projects Without a Web App Yet
-
-These standalone Python project files do not have a browser counterpart yet and are good future-port candidates:
-
-- [games/Reverse-Hangman-Game/Reverse-Hangman-Game.py](games/Reverse-Hangman-Game/Reverse-Hangman-Game.py)
-- [math/Happy-Number/Happy-Number.py](math/Happy-Number/Happy-Number.py)
-- [math/Matrix-Calculator/Matrix-Calculator.py](math/Matrix-Calculator/Matrix-Calculator.py)
-- [math/Quadratic-Solver/Quadratic-Solver.py](math/Quadratic-Solver/Quadratic-Solver.py)
-- [utilities/Caesar-Cipher/Caesar-Cipher.py](utilities/Caesar-Cipher/Caesar-Cipher.py)
-- [utilities/Fake-News-Headline-Generator/Fake-News-Headline-Generator.py](utilities/Fake-News-Headline-Generator/Fake-News-Headline-Generator.py)
 
 ---
 
